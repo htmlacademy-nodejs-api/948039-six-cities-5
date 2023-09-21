@@ -1,7 +1,7 @@
 # Личный проект «Шесть городов»
 
-* Студент: [Максим Ткаченко](https://up.htmlacademy.ru/nodejs-api/5/user/948039).
-* Наставник: `Неизвестно`.
+- Студент: [Максим Ткаченко](https://up.htmlacademy.ru/nodejs-api/5/user/948039).
+- Наставник: [Евгений Наумов](https://htmlacademy.ru/profile/naumov_evg).
 
 ---
 
