@@ -1,11 +1,23 @@
+import { Logger } from '../logger/index.js';
+import { config } from 'dotenv';
 import { Config } from './config.interface.js';
+import { configRestSchema, RestSchema } from './rest.schema.js';
 
-export class RestConfig implements Config {
-  constructor(
-    private readonly config: NodeJS.ProcessEnv
-  ) {}
+export class RestConfig implements Config<RestSchema> {
+  private readonly config: RestSchema;
+  constructor(private readonly logger: Logger) {
+    const parsedOutput = config();
+    if (parsedOutput.error) {
+      throw new Error('Can\'t read .env file. Perhaps the file does not exists.');
+    }
+    configRestSchema.load({});
+    // configRestSchema.validate({ allowed: 'strict', output: this.logger.info });
+    this.config = configRestSchema.getProperties();
+    console.log(this.config);
+    this.logger.info('.env file found and successfully parsed!');
+  }
 
-  get(name: string): string | undefined {
+  get<T extends keyof RestSchema>(name: T): RestSchema[T] {
     return this.config[name];
   }
 }
