@@ -1,4 +1,4 @@
-import { City, Convenience, HouseTypeEnum , User } from './index.js';
+import { City, Convenience, HouseTypeEnum } from './index.js';
 
 export type Offer = {
   title: string;
@@ -15,7 +15,7 @@ export type Offer = {
   guest: number;
   price: number;
   conveniences: Convenience[];
-  user: Omit<User, 'password'>;
+  userId: string;
   commentsCount: number;
   coords: [string, string];
 }

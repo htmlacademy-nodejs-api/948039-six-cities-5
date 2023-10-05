@@ -3,14 +3,6 @@ import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose
 import { User, UserTypeEnum } from '../../types/index.js';
 import { createSHA256 } from '../../helpers/index.js';
 
-const validateAvatar = (avatar: string | undefined) => {
-  if (!avatar) {
-    return true;
-  }
-  return avatar.endsWith('.jpg') || avatar.endsWith('.png');
-};
-const EMAIL_REGEXP = /^([\w-\\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-
 export interface UserEntity extends defaultClasses.Base {}
 
 @modelOptions({
@@ -19,13 +11,13 @@ export interface UserEntity extends defaultClasses.Base {}
   }
 })
 export class UserEntity extends defaultClasses.TimeStamps implements User {
-  @prop({required: true, minlength: 1, maxlength: 15})
+  @prop({required: true})
   public name: string;
 
-  @prop({required: true, unique: true, match: EMAIL_REGEXP})
+  @prop({required: true, unique: true})
   public email: string;
 
-  @prop({required: false, validate: validateAvatar, default: ''})
+  @prop({required: false, default: ''})
   public avatar?: string;
 
   @prop({required: true})
