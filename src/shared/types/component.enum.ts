@@ -7,4 +7,6 @@ export const Component = {
   UserModel: Symbol.for('UserModel'),
   OfferService: Symbol.for('OfferService'),
   OfferModel: Symbol.for('OfferModel'),
+  CLIApplication: Symbol.for('CLIApplication'),
+  ImportCommand: Symbol.for('ImportCommand'),
 } as const;

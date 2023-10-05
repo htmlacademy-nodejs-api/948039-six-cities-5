@@ -3,6 +3,7 @@ import { FileReader } from './file-reader.interface.js';
 import EventEmitter from 'node:events';
 
 const CHUNK_SIZE = 16384; // 16KB
+
 export class TSVFileReader extends EventEmitter implements FileReader {
   constructor(private readonly path: string) {
     super();

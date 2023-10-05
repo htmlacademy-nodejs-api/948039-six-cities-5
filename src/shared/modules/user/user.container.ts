@@ -6,7 +6,6 @@ import { types } from '@typegoose/typegoose';
 
 export const createUserContainer = () => {
   const userContainter = new Container();
-
   userContainter.bind<UserService>(Component.UserService).to(DefaultUserService).inSingletonScope();
   userContainter.bind<types.ModelType<UserEntity>>(Component.UserModel).toConstantValue(UserModel);
   return userContainter;

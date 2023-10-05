@@ -1,7 +1,11 @@
 import { City, Convenience, HouseTypeEnum, Offer } from '../types/index.js';
 
-export function createOffer(offerData: string): Offer {
-  const [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, commentsCount, coords] = offerData.replace('\n', '').split('\t');
+interface email { email: string }
+
+type Assad = Omit<Offer, 'userId'> & email;
+
+export function createOffer(offerData: string): Assad {
+  const [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, email, commentsCount, coords] = offerData.replace('\n', '').split('\t');
   const [lat, lon] = coords.split(';');
   return {
     title,
@@ -18,7 +22,7 @@ export function createOffer(offerData: string): Offer {
     guest: Number.parseInt(guest, 10),
     price: Number.parseInt(price, 10),
     conveniences: conveniences.split(';') as Convenience[],
-    userId: '',
+    email,
     commentsCount: Number.parseInt(commentsCount, 10),
     coords: [lat, lon],
   };

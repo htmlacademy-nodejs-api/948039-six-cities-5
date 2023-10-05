@@ -1,9 +1,11 @@
+import { injectable } from 'inversify';
 import { CommandParser } from './command-parser.js';
 import { Command } from './commands/command.interface.js';
 
 type CommandCollection = Record<string, Command>;
 
-export class CLAApplication {
+@injectable()
+export class CLIApplication {
   private commandsCollection: CommandCollection = {};
   private defaultCommand: string = '--help';
 
