@@ -32,7 +32,6 @@ export class TSVOfferGenerator implements OfferGenerator {
     const lat = generateRandomValue(MIN_LAT_VALUE, MAX_LAT_VALUE, 5);
     const lon = generateRandomValue(MIN_LON_VALUE, MAX_LON_VALUE, 5);
     const coords = `${lat};${lon}`;
-    return [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, name, email,
-      avatar, type, commentsCount,coords].join('\t');
+    return [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, name, email, avatar, type, commentsCount, coords].join('\t');
   }
 }

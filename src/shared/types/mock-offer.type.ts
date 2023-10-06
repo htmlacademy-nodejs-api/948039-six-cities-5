@@ -1,6 +1,6 @@
-import { City, Convenience, HouseTypeEnum } from './index.js';
+import { City, Convenience, HouseTypeEnum , User } from './index.js';
 
-export type Offer = {
+export type MockOffer = {
   title: string;
   description: string;
   postDate: Date;
@@ -15,7 +15,7 @@ export type Offer = {
   guest: number;
   price: number;
   conveniences: Convenience[];
-  userId: string;
+  user: Omit<User, 'password'>;
   commentsCount: number;
   coords: [string, string];
 }

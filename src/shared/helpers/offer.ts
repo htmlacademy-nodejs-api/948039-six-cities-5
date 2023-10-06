@@ -1,6 +1,6 @@
-import { City, Convenience, HouseTypeEnum, Offer, UserTypeEnum } from '../types/index.js';
+import { City, Convenience, HouseTypeEnum, MockOffer, UserTypeEnum } from '../types/index.js';
 
-export function createOffer(offerData: string): Offer {
+export function createMockOffer(offerData: string): MockOffer {
   const [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, name, email, avatar, type, commentsCount, coords] = offerData.replace('\n', '').split('\t');
   const [lat, lon] = coords.split(';');
   return {
