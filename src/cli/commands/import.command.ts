@@ -1,5 +1,7 @@
+/* eslint-disable no-process-exit */
+/* eslint-disable node/no-process-exit */
 import { injectable, inject } from 'inversify';
-import { getErrorMessage, getMongoURI } from '../../shared/helpers/index.js';
+import { getMongoURI } from '../../shared/helpers/index.js';
 import { createMockOffer } from '../../shared/helpers/offer.js';
 import { TSVFileReader } from '../../shared/libs/file-reader/index.js';
 import { Command } from './command.interface.js';
@@ -10,6 +12,8 @@ import { Config, RestSchema } from '../../shared/libs/config/index.js';
 import { DatabaseClient } from '../../shared/libs/database-client/index.js';
 import { DEFAULT_USER_PASSWORD } from '../constant.js';
 import { MockOffer } from '../../shared/types/index.js';
+import chalk from 'chalk';
+import { Logger } from '../../shared/libs/logger/index.js';
 
 @injectable()
 export class ImportCommand implements Command {
@@ -18,8 +22,10 @@ export class ImportCommand implements Command {
     @inject(Component.UserService) private readonly userService: DefaultUserService,
     @inject(Component.Config) private readonly config: Config<RestSchema>,
     @inject(Component.DatabaseClient) private readonly databaseClient: DatabaseClient,
+    @inject(Component.Logger) private readonly logger: Logger,
   ) {
     this.onImportedLine = this.onImportedLine.bind(this);
+    this.onCompleteImport = this.onCompleteImport.bind(this);
   }
 
   public getName(): string {
@@ -33,7 +39,8 @@ export class ImportCommand implements Command {
   }
 
   private onCompleteImport(count: number) {
-    console.info(`${count} rows imported.`);
+    this.logger.info(`${chalk.green(`Successfully imported  ${chalk.bgYellowBright(` ${count} `)} rows`)}`);
+    process.exit(0);
   }
 
   private async createOffer(mockOffer: MockOffer): Promise<void> {
@@ -70,8 +77,7 @@ export class ImportCommand implements Command {
     try {
       fileReader.read();
     } catch (error) {
-      console.error(`Can't import data from file: ${filename}`);
-      console.error(getErrorMessage(error));
+      this.logger.error(`Can't import data from file: ${filename}`, error as Error);
     }
   }
 }

@@ -8,5 +8,8 @@ export const Component = {
   OfferService: Symbol.for('OfferService'),
   OfferModel: Symbol.for('OfferModel'),
   CLIApplication: Symbol.for('CLIApplication'),
+  VersionCommand: Symbol.for('VersionCommand'),
+  HelpCommand: Symbol.for('HelpCommand'),
   ImportCommand: Symbol.for('ImportCommand'),
+  GenerateCommand: Symbol.for('GenerateCommand'),
 } as const;

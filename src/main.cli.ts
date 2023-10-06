@@ -11,12 +11,15 @@ import { createOfferContainer } from './shared/modules/offer/offer.container.js'
 const bootstrap = () => {
   const cliContainer = Container.merge(createSLIApplication(), createUserContainer(), createOfferContainer());
   const claApplication = cliContainer.get<CLIApplication>(Component.CLIApplication);
+  const versionCommand = cliContainer.get<VersionCommand>(Component.VersionCommand);
+  const helpCommand = cliContainer.get<HelpCommand>(Component.HelpCommand);
   const importCommand = cliContainer.get<ImportCommand>(Component.ImportCommand);
+  const generateCommand = cliContainer.get<GenerateCommand>(Component.GenerateCommand);
   claApplication.register([
-    new VersionCommand(),
-    new HelpCommand(),
+    versionCommand,
+    helpCommand,
     importCommand,
-    new GenerateCommand(),
+    generateCommand,
   ]);
 
   claApplication.processCommand(process.argv);

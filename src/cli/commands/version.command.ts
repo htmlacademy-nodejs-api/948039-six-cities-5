@@ -1,5 +1,8 @@
+import { inject, injectable } from 'inversify';
 import { Command } from './command.interface.js';
 import { readFileSync } from 'node:fs';
+import { Component } from '../../shared/types/index.js';
+import { Logger } from '../../shared/libs/logger/index.js';
 
 type PackageJSONConfig = {
   version: string;
@@ -17,8 +20,12 @@ const isValidJson = (json: unknown): json is PackageJSONConfig => {
   }
 };
 
+@injectable()
 export class VersionCommand implements Command {
-  constructor(private readonly filePath: string = './package.json') {}
+  constructor(
+    @inject(Component.Logger) private readonly logger: Logger,
+    private readonly filePath: string = './package.json'
+  ) {}
 
   private readVersion() {
     const jsonData = readFileSync(this.filePath, 'utf-8');
@@ -38,13 +45,9 @@ export class VersionCommand implements Command {
   public async execute(..._parameters: string[]): Promise<void> {
     try {
       const version = this.readVersion();
-      console.info(version);
+      this.logger.info(version);
     } catch (error: unknown) {
-      console.error(`Failed to read version from ${this.filePath}`);
-
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
+      this.logger.error(`Failed to read version from ${this.filePath}`, error as Error);
     }
   }
 }
