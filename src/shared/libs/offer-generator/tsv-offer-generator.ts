@@ -24,11 +24,14 @@ export class TSVOfferGenerator implements OfferGenerator {
     const guest = generateRandomValue(MIN_GUEST, MAX_GUEST);
     const price = generateRandomValue(MIN_PRICE, MAX_PRICE);
     const conveniences = getRandomItems(this.mockData.conveniences).join(';');
+    const name = getRandomItem(this.mockData.names);
     const email = getRandomItem(this.mockData.emails);
+    const avatar = getRandomItem(this.mockData.avatars);
+    const type = getRandomItem(this.mockData.types);
     const commentsCount = generateRandomValue(0, 100);
     const lat = generateRandomValue(MIN_LAT_VALUE, MAX_LAT_VALUE, 5);
     const lon = generateRandomValue(MIN_LON_VALUE, MAX_LON_VALUE, 5);
     const coords = `${lat};${lon}`;
-    return [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, email, commentsCount, coords].join('\t');
+    return [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, name, email, avatar, type, commentsCount, coords].join('\t');
   }
 }

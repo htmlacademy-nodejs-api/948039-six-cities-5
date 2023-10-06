@@ -1,15 +1,15 @@
 import { injectable, inject } from 'inversify';
 import { getErrorMessage, getMongoURI } from '../../shared/helpers/index.js';
-import { createOffer } from '../../shared/helpers/offer.js';
+import { createMockOffer } from '../../shared/helpers/offer.js';
 import { TSVFileReader } from '../../shared/libs/file-reader/index.js';
 import { Command } from './command.interface.js';
 import { Component } from '../../shared/types/component.enum.js';
 import { DefaultOfferService } from '../../shared/modules/offer/default-offer.service.js';
 import { DefaultUserService } from '../../shared/modules/user/default-user.service.js';
 import { Config, RestSchema } from '../../shared/libs/config/index.js';
-import { CreateUserDto } from '../../shared/modules/user/dto/create-user.dto.js';
-import { UserTypeEnum } from '../../shared/types/user-type.enum.js';
 import { DatabaseClient } from '../../shared/libs/database-client/index.js';
+import { DEFAULT_USER_PASSWORD } from '../constant.js';
+import { MockOffer } from '../../shared/types/index.js';
 
 @injectable()
 export class ImportCommand implements Command {
@@ -19,38 +19,32 @@ export class ImportCommand implements Command {
     @inject(Component.Config) private readonly config: Config<RestSchema>,
     @inject(Component.DatabaseClient) private readonly databaseClient: DatabaseClient,
   ) {
-    console.log(this.userService);
+    this.onImportedLine = this.onImportedLine.bind(this);
   }
 
   public getName(): string {
     return '--import';
   }
 
-  private async onImportedLine(line: string) {
-    console.log(this.config.get('DB_HOST'));
-    const offer = createOffer(line);
-    const email = offer.email;
-
-    const generateUser = (emailProps: string): CreateUserDto => ({
-      email: emailProps,
-      name: 's',
-      avatar: 'sda',
-      type: UserTypeEnum.default,
-      password: '13123'
-    });
-
-    const generatedUser = generateUser(email);
-
-    const user = await this.userService.findOrCreate(generatedUser, this.config.get('SALT'));
-
-
-    const adsca = Object.assign({}, offer, {userId: user._id.toString()});
-
-    await this.offerService.create(adsca);
+  private async onImportedLine(line: string, resolve: () => void) {
+    const mockOffer = createMockOffer(line);
+    await this.createOffer(mockOffer);
+    resolve();
   }
 
   private onCompleteImport(count: number) {
     console.info(`${count} rows imported.`);
+  }
+
+  private async createOffer(mockOffer: MockOffer): Promise<void> {
+    const {user, ...rawOffer} = mockOffer;
+    const userWithPassword = {
+      ...user,
+      password: DEFAULT_USER_PASSWORD
+    };
+    const userId = (await this.userService.findOrCreate(userWithPassword, this.config.get('SALT')))._id.toString();
+    const offer = {...rawOffer , userId};
+    await this.offerService.create(offer);
   }
 
   private async _initDb() {

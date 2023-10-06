@@ -9,28 +9,30 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     super();
   }
 
-  read(): void {
+  async read(): Promise<void> {
     const stream = createReadStream(this.path, {
       encoding: 'utf-8',
       highWaterMark: CHUNK_SIZE
     });
-    let content = '';
+
+    let remainingData = '';
+    let nextLinePosition = -1;
     let importedRowCount = 0;
 
-    stream.on('data', (chunk: Buffer) => {
-      content += chunk.toString();
+    for await (const chunk of stream) {
+      remainingData += chunk.toString();
 
-      while (content.indexOf('\n') >= 0) {
-        let nextLinePosition = content.indexOf('\n');
-        const completeRow = content.slice(0, nextLinePosition + 1);
-        content = content.slice(++nextLinePosition);
+      while ((nextLinePosition = remainingData.indexOf('\n')) >= 0) {
+        const completeRow = remainingData.slice(0, nextLinePosition + 1);
+        remainingData = remainingData.slice(++nextLinePosition);
         importedRowCount++;
-        this.emit('line', completeRow);
-      }
-    });
 
-    stream.on('end', () => {
-      this.emit('end', importedRowCount);
-    });
+        await new Promise((resolve) => {
+          this.emit('line', completeRow, resolve);
+        });
+      }
+    }
+
+    this.emit('end', importedRowCount);
   }
 }

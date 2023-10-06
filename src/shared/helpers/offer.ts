@@ -1,11 +1,7 @@
-import { City, Convenience, HouseTypeEnum, Offer } from '../types/index.js';
+import { City, Convenience, HouseTypeEnum, MockOffer, UserTypeEnum } from '../types/index.js';
 
-interface email { email: string }
-
-type Assad = Omit<Offer, 'userId'> & email;
-
-export function createOffer(offerData: string): Assad {
-  const [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, email, commentsCount, coords] = offerData.replace('\n', '').split('\t');
+export function createMockOffer(offerData: string): MockOffer {
+  const [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, name, email, avatar, type, commentsCount, coords] = offerData.replace('\n', '').split('\t');
   const [lat, lon] = coords.split(';');
   return {
     title,
@@ -22,7 +18,12 @@ export function createOffer(offerData: string): Assad {
     guest: Number.parseInt(guest, 10),
     price: Number.parseInt(price, 10),
     conveniences: conveniences.split(';') as Convenience[],
-    email,
+    user: {
+      name,
+      email,
+      avatar,
+      type: type as UserTypeEnum,
+    },
     commentsCount: Number.parseInt(commentsCount, 10),
     coords: [lat, lon],
   };
