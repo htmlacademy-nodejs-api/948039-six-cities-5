@@ -1,5 +1,3 @@
-/* eslint-disable no-process-exit */
-/* eslint-disable node/no-process-exit */
 import { injectable, inject } from 'inversify';
 import { getMongoURI } from '../../shared/helpers/index.js';
 import { createMockOffer } from '../../shared/helpers/offer.js';
@@ -38,9 +36,9 @@ export class ImportCommand implements Command {
     resolve();
   }
 
-  private onCompleteImport(count: number) {
+  private async onCompleteImport(count: number) {
     this.logger.info(`${chalk.green(`Successfully imported  ${chalk.bgYellowBright(` ${count} `)} rows`)}`);
-    process.exit(0);
+    await this.databaseClient.disconect();
   }
 
   private async createOffer(mockOffer: MockOffer): Promise<void> {
@@ -75,7 +73,7 @@ export class ImportCommand implements Command {
     fileReader.on('end', this.onCompleteImport);
 
     try {
-      fileReader.read();
+      await fileReader.read();
     } catch (error) {
       this.logger.error(`Can't import data from file: ${filename}`, error as Error);
     }

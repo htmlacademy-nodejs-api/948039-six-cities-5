@@ -1,4 +1,4 @@
 # Get mock data from fake server
-GET http://localhost:8080/api HTTP/1.1
-
+GET /posts HTTP/1.1
+Host: jsonplaceholder.typicode.com
 ###
