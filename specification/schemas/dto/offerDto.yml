@@ -1,0 +1,111 @@
+title: offerDto
+type: object
+description: данные обьявления
+properties:
+  title:
+    type: string
+    example: Отель "Мариот"
+
+  description:
+    type: string
+    example: Загородный отель. Пять звезд
+
+  postDate:
+    type: string
+    format: date-time
+    example: 2023-10-03T06:36:07.085Z
+
+  city:
+    type: string
+    description: доступный город обьявления
+    enum:
+      - Paris
+      - Cologne
+      - Brussels
+      - Amsterdam
+      - Hamburg
+      - Dusseldorf
+    example: Paris
+
+
+  preview:
+    type: string
+    example: preview.jpg
+
+  images:
+    type: array
+    items:
+      type: string
+    example: [big-hotel.jpg, cheap.jpg]
+
+  isPremium:
+    type: boolean
+    example: true
+
+  isFavorite:
+    type: boolean
+    example: false
+
+  rate:
+    type: number
+    minimum: 0
+    maximum: 5
+    format: float
+    example: 4.3
+
+  houseType:
+    type: string
+    enum:
+      - apartment
+      - house
+      - room
+      - hotel
+    example: apartment
+
+  room:
+    type: number
+    minimum: 1
+    maximum: 8
+    example: 2
+
+  guest:
+    type: number
+    minimum: 1
+    maximum: 10
+    example: 4
+
+  price:
+    type: number
+    minimum: 100
+    maximum: 100000
+    example: 10500
+
+  conveniences:
+    type: array
+    items:
+      type: string
+      enum:
+        - Breakfast
+        - Air conditioning
+        - Laptop friendly workspace
+        - Baby seat
+        - Washer
+        - Towels
+        - Fridge
+    example: [Fridge, Baby seat]
+
+  userId:
+    type: string
+    example: ewe1231ewqdqwe12
+
+  commentsCount:
+    type: number
+    example: 78
+
+  coords:
+    type: array
+    minLength: 2
+    maxLength: 2
+    items:
+      type: string
+    example: [31, 21]

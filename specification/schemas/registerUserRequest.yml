@@ -1,0 +1,30 @@
+title: RegisterUserRequest
+type: object
+description: Регистрация нового пользователя
+required:
+  - name
+  - email
+  - password
+  - type
+properties:
+  name:
+    type: string
+    example: Ivan Ivanov
+
+  email:
+    type: string
+    format: email
+    example: keks@htmlacademy.ru
+
+  avatar:
+    type: string
+    example: avatar.jpg
+
+  password:
+    type: string
+    format: password
+    example: 123456
+
+  type:
+    type: string
+    example: pro

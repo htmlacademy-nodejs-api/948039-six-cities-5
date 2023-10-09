@@ -1,0 +1,25 @@
+title: СheckUserRequest
+type: object
+description: Информация пользователя
+required:
+  - name
+  - email
+  - avatar
+  - type
+properties:
+  name:
+    type: string
+    example: Ivan Ivanov
+
+  email:
+    type: string
+    format: email
+    example: keks@htmlacademy.ru
+
+  avatar:
+    type: string
+    example: avatar.jpg
+
+  type:
+    type: string
+    example: pro

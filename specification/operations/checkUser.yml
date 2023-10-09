@@ -1,0 +1,11 @@
+operationId: checkUser
+tags:
+  - users
+summary: Проверка пользователя
+$ref: ../schemas/all.yml#/CheckUserRequest
+responses:
+  200:
+   content:
+    application/json:
+      schema:
+        $ref: ../schemas/all.yml#/CheckUserResponse

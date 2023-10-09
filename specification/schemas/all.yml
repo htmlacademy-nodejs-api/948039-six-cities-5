@@ -1,0 +1,67 @@
+###
+# РАБОТА С СУЩНОСТЬЮ ПОЛЬЗОВАТЕЛЬ
+###
+
+RegisterUserRequest:
+  $ref: ./registerUserRequest.yml
+RegisterUserResponse:
+  $ref: ./registerUserResponse.yml
+
+LoginUserRequest:
+  $ref: ./loginUserRequest.yml
+LoginUserResponse:
+  $ref: ./loginUserResponse.yml
+
+CheckUserRequest:
+  $ref: ./checkUserRequest.yml
+CheckUserResponse:
+  $ref: ./checkUserResponse.yml
+
+LogoutUserRequest:
+  $ref: ./logoutUserRequest.yml
+LogoutUserResponse:
+  $ref: ./logoutUserResponse.yml
+
+###
+# РАБОТА С СУЩНОСТЬЮ ПРЕДЛОЖЕНИЕ
+###
+
+CreateOfferRequest:
+  $ref: ./createOfferRequest.yml
+CreateOfferResponse:
+  $ref: ./createOfferResponse.yml
+
+UpdateOfferRequest:
+  $ref: ./updateOfferRequest.yml
+UpdateOfferResponse:
+  $ref: ./updateOfferResponse.yml
+
+DeleteOfferRequest:
+  $ref: ./deleteOfferRequest.yml
+DeleteOfferResponse:
+  $ref: ./deleteOfferResponse.yml
+
+GetOffersRequest:
+  $ref: ./getOffersRequest.yml
+GetOffersResponse:
+  $ref: ./getOffersResponse.yml
+
+GetOfferRequest:
+  $ref: ./getOfferRequest.yml
+GetOfferResponse:
+  $ref: ./getOfferResponse.yml
+
+###
+# РАБОТА С СУЩНОСТЬЮ КОММЕНТАРИЙ
+###
+
+CreateCommentRequest:
+  $ref: ./createCommentRequest.yml
+CreateCommentResponse:
+  $ref: ./createCommentResponse.yml
+
+GetCommentsRequest:
+  $ref: ./getCommentsRequest.yml
+GetCommentsResponse:
+  $ref: ./getCommentsRequest.yml
+

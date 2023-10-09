@@ -1,0 +1,25 @@
+operationId: getFavoriteOffer
+tags:
+  - favorites
+summary: Получение изрбанных предложений по индификатору пользователя
+parameters:
+  - in: path
+    required: true
+    name: userId
+    schema:
+      type: string
+      example: eseqe213123wqeqwe
+$ref: ../schemas/all.yml#/GetOfferRequest
+responses:
+  200:
+    content:
+      application/json:
+        schema:
+          properties:
+            offers:
+             type: array
+             items:
+                $ref: ../schemas/dto/offerDto.yml
+
+
+

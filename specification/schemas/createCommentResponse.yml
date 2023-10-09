@@ -1,0 +1,10 @@
+title: CreateCommentResponse
+type: object
+description: Создание нового комментария
+required:
+  - comment
+  - postDate
+  - rate
+  - userId
+$ref: ./dto/commentDto.yml
+

@@ -1,0 +1,13 @@
+operationId: loginUser
+tags:
+  - users
+summary: Авторизация пользователя
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../schemas/all.yml#/LoginUserRequest
+responses:
+  200:
+    $ref: ../schemas/all.yml#/LoginUserResponse

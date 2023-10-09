@@ -1,0 +1,17 @@
+operationId: getComments
+tags:
+  - comments
+summary: Получение комментариев по индификатору предложения
+parameters:
+  - in: path
+    name: offerId
+    schema:
+      type: string
+      example: eseqe213123wqeqwe
+$ref: ../schemas/all.yml#/GetCommentsRequest
+responses:
+  200:
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/all.yml#/GetCommentsResponse

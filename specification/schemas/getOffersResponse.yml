@@ -1,0 +1,8 @@
+title: GetOffersResponse
+type: object
+description: список предложения
+properties:
+  offers:
+    type: array
+    items:
+      $ref: ./dto/shortOfferDto.yml

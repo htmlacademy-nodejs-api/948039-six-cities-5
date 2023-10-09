@@ -1,0 +1,22 @@
+title: UpdateOfferResponse
+type: object
+description: Успешное обновление предложения
+required:
+  - title
+  - description
+  - postDate
+  - city
+  - preview
+  - images
+  - isPremium
+  - isFavorite
+  - rate
+  - houseType
+  - room
+  - guest
+  - price
+  - conveniences
+  - userId
+  - commentsCount
+  - coords
+$ref: ./dto/offerDto.yml

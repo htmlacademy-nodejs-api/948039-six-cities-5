@@ -1,0 +1,4 @@
+title: GetOfferResponse
+type: object
+description: предложение по индификатору
+$ref: ./dto/OfferDto.yml

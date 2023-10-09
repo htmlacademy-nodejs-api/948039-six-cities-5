@@ -1,0 +1,23 @@
+operationId: createComment
+tags:
+  - comments
+summary: Создание нового комментария
+parameters:
+  - in: path
+    name: offerId
+    required: true
+    schema:
+      type: string
+      example: qwefqdqwe3123eq
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../schemas/all.yml#/CreateCommentRequest
+responses:
+  201:
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/all.yml#/CreateCommentResponse

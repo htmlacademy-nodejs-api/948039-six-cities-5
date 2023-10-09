@@ -1,0 +1,80 @@
+openapi: 3.0.1
+info:
+  title: "API сервер для проекта six-cities"
+  version: "1.0.0"
+  contact:
+    name: Tkachenko Maksim
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+tags:
+  - name: users
+    description: Действия с пользователем.
+  - name: offers
+    description: Действия с объявлениями.
+  - name: comments
+    description: Действия с комментариями.
+  - name: premiums
+    description: Действия с премиальными обьявлениями.
+  - name: favorites
+    description: Действия с избранными обьявлениями.
+
+paths:
+  /users/register:
+    post:
+      $ref: ./operations/registerUser.yml
+  /users/login:
+    post:
+      $ref: ./operations/loginUser.yml
+    get:
+      $ref: ./operations/checkUser.yml
+  /users/logout:
+    get:
+      $ref: ./operations/logoutUser.yml
+  /offers:
+    get:
+      $ref: ./operations/getOffers.yml
+    post:
+      $ref: ./operations/createOffer.yml
+  /offers/[offerId]:
+    get:
+      $ref: ./operations/getOfferByOfferId.yml
+    put:
+      $ref: ./operations/updateOffer.yml
+    delete:
+      $ref: ./operations/deleteOfferByOfferId.yml
+  /comments/[offerId]:
+    get:
+      $ref: ./operations/getCommentsByOfferId.yml
+    post:
+      $ref: ./operations/createCommentByOfferId.yml
+  /premiums/[city]:
+    get:
+      $ref: ./operations/getOffersByCityId.yml
+  /favorites/[userId]:
+    get:
+      $ref: ./operations/getFavoriteOffers.yml
+    patch:
+      $ref: ./operations/changeFavoriteOffers.yml
+
+
+
+components:
+  schemas:
+    $ref: ./schemas/all.yml
+  responses:
+    400:
+      description: Ресурс не прошел валидацию
+    401:
+      description: Ресурс не доступен
+    403:
+      description: Ресурс не доступен
+    404:
+      description: Ресурс не найден
+    500:
+      description: Сервис не работает
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

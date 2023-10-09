@@ -1,0 +1,11 @@
+title: offerCityEnum
+type: string
+description: доступный город обьявления
+enum:
+  - Paris
+  - Cologne
+  - Brussels
+  - Amsterdam
+  - Hamburg
+  - Dusseldorf
+example: Paris
