@@ -1,25 +1,74 @@
 import { DocumentType, types } from '@typegoose/typegoose';
-import { Logger } from '../../libs/logger/index.js';
-import { Component } from '../../types/index.js';
+import { Component, SortType } from '../../types/index.js';
 import { OfferEntity } from './offer.entity.js';
 import { inject, injectable } from 'inversify';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
 import {Types} from 'mongoose';
+import { OfferService } from './offer-service.interface.js';
+import { UpdateOfferDto } from './dto/update-offer.dto.js';
+import { DEFAULT_OFFER_COUNT, DEFAULT_PREMIUM_OFFER_COUNT } from './offer.constant.js';
+
 
 @injectable()
-export class DefaultOfferService {
+export class DefaultOfferService implements OfferService {
   constructor(
-    @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = await this.offerModel.create(dto);
-    this.logger.info(`New offer created: ${result._id}`);
-    return result;
+    return await this.offerModel.create(dto);
+  }
+
+  public async find(count?: number): Promise<{ offers: DocumentType<OfferEntity>[]; }> {
+    const limit = count ?? DEFAULT_OFFER_COUNT;
+    const offers = await this.offerModel
+      .aggregate([
+        {
+          $lookup: {
+            from: 'favorites',
+            let: { offerId: '$_id', userId: '$userId'},
+            pipeline: [
+              { $match:
+                { $expr:
+                  { $and:
+                     [
+                       { $eq: [ '$offerId', '$$offerId' ] },
+                       { $eq: [ '$userId', '$$userId' ] }
+                     ]
+                  }
+                }
+              },
+            ],
+            as: 'favorites'
+          },
+        },
+        { $addFields:
+          { isFavorite: { $toBool: {$size: '$favorites'} } }
+        },
+        { $unset: 'favorites' },
+      ])
+      .limit(limit)
+      .exec();
+    return {offers};
   }
 
   async findById(id: Types.ObjectId): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findById(id);
+    return this.offerModel.findById(id).exec();
+  }
+
+  public async updateById(id: Types.ObjectId, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
+    return await this.offerModel.findByIdAndUpdate(id, dto, {new: true}).exec();
+  }
+
+  public async incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null> {
+    return await this.offerModel.findByIdAndUpdate(offerId, {$inc: {commentsCount: 1}}).exec();
+  }
+
+  public async deleteById(id: Types.ObjectId): Promise<DocumentType<OfferEntity> | null>{
+    return await this.offerModel.findByIdAndDelete(id).exec();
+  }
+
+  public async findPremiumByCityName(city: string): Promise<DocumentType<OfferEntity>[] | null> {
+    return await this.offerModel.find({isPremium: true, city}).sort({ createdAt: SortType.Down }).limit(DEFAULT_PREMIUM_OFFER_COUNT).exec();
   }
 }
