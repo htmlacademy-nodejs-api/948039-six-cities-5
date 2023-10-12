@@ -2,6 +2,8 @@ import { getMongoURI } from '../shared/helpers/database.js';
 import { Config, RestSchema } from '../shared/libs/config/index.js';
 import { DatabaseClient } from '../shared/libs/database-client/database-client.interface.js';
 import { Logger } from '../shared/libs/logger/index.js';
+import { FavoriteService } from '../shared/modules/favorite/favorite-service.interface.js';
+import { OfferService } from '../shared/modules/offer/offer-service.interface.js';
 import { Component } from '../shared/types/index.js';
 import {injectable,inject} from 'inversify';
 
@@ -11,6 +13,8 @@ export class RestApplication {
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.Config) private readonly config: Config<RestSchema>,
     @inject(Component.DatabaseClient) private readonly databaseClient: DatabaseClient,
+    @inject(Component.OfferService) private readonly offerService: OfferService,
+    @inject(Component.FavoriteService) private readonly favoriteService: FavoriteService,
   ) {}
 
   private async _initDb() {
