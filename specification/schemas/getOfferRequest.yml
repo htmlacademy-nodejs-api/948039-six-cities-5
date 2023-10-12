@@ -1,0 +1,3 @@
+title: GetOfferRequest
+type: object
+description: Предложение по индификатору

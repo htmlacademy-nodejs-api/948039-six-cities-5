@@ -1,0 +1,23 @@
+title: commentDto
+type: object
+description: данные комментария
+properties:
+  comment:
+    type: string
+    example: Прекарсный комментарий
+
+  postDate:
+    type: string
+    format: date-time
+    example: 2023-10-03T06:36:07.085Z
+
+  rate:
+    type: number
+    minimum: 1
+    maximum: 5
+    format: float
+    example: 4.3
+
+  userId:
+    type: string
+    example: ewe1231ewqdqwe12

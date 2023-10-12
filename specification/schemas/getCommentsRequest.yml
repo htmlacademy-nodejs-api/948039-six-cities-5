@@ -1,0 +1,3 @@
+title: GetCommentsRequest
+type: object
+description: Список комментариев по индефикатору предложения

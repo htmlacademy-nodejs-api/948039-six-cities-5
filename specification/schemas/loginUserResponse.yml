@@ -1,0 +1,3 @@
+title: LoginUserRequest
+type: object
+description: Успешная авторизация нового пользователя

@@ -1,0 +1,15 @@
+operationId: deleteOffer
+tags:
+  - offers
+summary: Удаление предложения
+parameters:
+  - in: path
+    name: offerId
+    required: true
+    schema:
+      type: string
+      example: weq312ewqe123
+$ref: ../schemas/all.yml#/DeleteOfferRequest
+responses:
+  204:
+    $ref: ../schemas/all.yml#/DeleteOfferResponse

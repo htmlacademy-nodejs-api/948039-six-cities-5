@@ -1,0 +1,3 @@
+title: CheckUserRequest
+type: object
+description: Проверка авторизации пользователя

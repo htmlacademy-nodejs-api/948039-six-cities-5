@@ -1,0 +1,17 @@
+operationId: getOffers
+tags:
+  - offers
+summary: Получение списка предложений
+parameters:
+  - in: query
+    name: count
+    schema:
+      type: number
+      example: 60
+$ref: ../schemas/all.yml#/GetOffersRequest
+responses:
+  200:
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/all.yml#/GetOffersResponse

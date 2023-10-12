@@ -1,0 +1,16 @@
+operationId: createOffer
+tags:
+  - offers
+summary: Создание нового предложения
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../schemas/all.yml#/CreateOfferRequest
+responses:
+  201:
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/all.yml#/CreateOfferResponse

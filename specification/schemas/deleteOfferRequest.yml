@@ -1,0 +1,3 @@
+title: DeleteOfferRequest
+type: object
+description: Удаление предложения

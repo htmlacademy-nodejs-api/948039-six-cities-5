@@ -1,0 +1,9 @@
+title: GetCommentsResponse
+type: object
+description: Список комментариев по индефикатору предложения
+properties:
+  comments:
+    type: array
+    items:
+      $ref: ./dto/commentDto.yml
+

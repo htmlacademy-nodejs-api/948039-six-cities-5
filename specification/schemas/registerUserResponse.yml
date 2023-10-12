@@ -1,0 +1,9 @@
+title: RegisterUserResponse
+type: object
+description: Получение уникального индификатора нового пользователя
+required:
+  - id
+properties:
+  id:
+    type: string
+    example: sda1eqdqw3123

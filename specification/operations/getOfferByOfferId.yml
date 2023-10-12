@@ -1,0 +1,17 @@
+operationId: getOffer
+tags:
+  - offers
+summary: Получение предложения по индификатору
+parameters:
+  - in: path
+    name: offerId
+    schema:
+      type: string
+      example: eseqe213123wqeqwe
+$ref: ../schemas/all.yml#/GetOfferRequest
+responses:
+  200:
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/all.yml#/GetOfferResponse

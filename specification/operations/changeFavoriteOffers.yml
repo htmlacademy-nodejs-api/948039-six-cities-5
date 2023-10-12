@@ -1,0 +1,35 @@
+operationId: changeFavoriteOffer
+tags:
+  - favorites
+summary: Изменение списка изрбанных предложений по индификатору пользователя
+parameters:
+  - in: path
+    required: true
+    name: userId
+    schema:
+      type: string
+      example: eseqe213123wqeqwe
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        properties:
+          offers:
+            type: array
+            items:
+              type: string
+            example: [sdqweq123123wq, eweqe1231weasda]
+responses:
+  200:
+    content:
+      application/json:
+        schema:
+          properties:
+            offers:
+             type: array
+             items:
+                $ref: ../schemas/dto/offerDto.yml
+
+
+

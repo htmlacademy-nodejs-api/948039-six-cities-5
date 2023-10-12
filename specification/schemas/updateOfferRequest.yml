@@ -1,0 +1,23 @@
+title: UpdateOfferRequest
+type: object
+description: Обновление нового предложения
+required:
+  - title
+  - description
+  - postDate
+  - city
+  - preview
+  - images
+  - isPremium
+  - isFavorite
+  - rate
+  - houseType
+  - room
+  - guest
+  - price
+  - conveniences
+  - userId
+  - commentsCount
+  - coords
+$ref: ./dto/offerDto.yml
+

@@ -1,0 +1,16 @@
+operationId: registerUser
+tags:
+  - users
+summary: Регистрация нового пользователя
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../schemas/all.yml#/RegisterUserRequest
+responses:
+  201:
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/all.yml#/RegisterUserResponse

@@ -1,0 +1,8 @@
+operationId: logoutUser
+tags:
+  - users
+summary: Анавторизация пользователя
+$ref: ../schemas/all.yml#/LogoutUserRequest
+responses:
+  200:
+    $ref: ../schemas/all.yml#/LogoutUserResponse

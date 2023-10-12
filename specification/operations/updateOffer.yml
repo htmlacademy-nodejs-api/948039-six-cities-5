@@ -1,0 +1,23 @@
+operationId: updateOffer
+tags:
+  - offers
+summary: Редактирование предложения
+parameters:
+  - in: path
+    name: offerId
+    required: true
+    schema:
+      type: string
+      example: weq312ewqe123
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../schemas/all.yml#/UpdateOfferRequest
+responses:
+  200:
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/all.yml#/UpdateOfferResponse
