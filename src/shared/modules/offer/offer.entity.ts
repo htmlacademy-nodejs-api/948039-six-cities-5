@@ -36,12 +36,6 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   public isPremium: boolean;
 
   @prop()
-  public isFavorite: boolean;
-
-  @prop()
-  public rate: number;
-
-  @prop()
   public houseType: HouseTypeEnum;
 
   @prop()

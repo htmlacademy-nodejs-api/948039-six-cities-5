@@ -42,10 +42,45 @@ export class DefaultOfferService implements OfferService {
             as: 'favorites'
           },
         },
+        {
+          $lookup: {
+            from: 'comments',
+            let: { offerId: '$_id'},
+            pipeline: [
+              { $match:
+                { $expr:
+                  { $eq: [ '$offerId', '$$offerId' ] }
+                }
+              }
+            ],
+            as: 'comments'
+          }
+        },
         { $addFields:
-          { isFavorite: { $toBool: {$size: '$favorites'} } }
+          {
+            isFavorite: { $toBool: {$size: '$favorites'} },
+            commentsRate: {$cond: [
+              {
+                $ne: [{
+                  $size: '$comments'
+                },
+                0
+                ]
+              },
+              {$divide: [
+                {$reduce: {
+                  input: '$comments',
+                  initialValue: 0,
+                  in: {$add: ['$$value', '$$this.rate'],}
+                }},
+                {$size: '$comments'}
+              ]},
+              0
+            ]}
+          }
         },
         { $unset: 'favorites' },
+        { $unset: 'comments' },
       ])
       .limit(limit)
       .exec();

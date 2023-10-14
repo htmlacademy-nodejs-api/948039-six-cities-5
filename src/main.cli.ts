@@ -7,9 +7,17 @@ import { createUserContainer } from './shared/modules/user/index.js';
 
 import { createSLIApplication } from './cli/cli.container.js';
 import { createOfferContainer } from './shared/modules/offer/offer.container.js';
+import { createCommentContainer } from './shared/modules/comment/index.js';
+import { createFavoriteContainer } from './shared/modules/favorite/index.js';
 
 const bootstrap = () => {
-  const cliContainer = Container.merge(createSLIApplication(), createUserContainer(), createOfferContainer());
+  const cliContainer = Container.merge(
+    createSLIApplication(),
+    createUserContainer(),
+    createOfferContainer(),
+    createCommentContainer(),
+    createFavoriteContainer()
+  );
   const claApplication = cliContainer.get<CLIApplication>(Component.CLIApplication);
   const versionCommand = cliContainer.get<VersionCommand>(Component.VersionCommand);
   const helpCommand = cliContainer.get<HelpCommand>(Component.HelpCommand);

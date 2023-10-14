@@ -9,7 +9,7 @@ import { DEFAULT_COMMENT_COUNT } from './comment.constant.js';
 @injectable()
 export class DefaultCommentService implements CommentService {
   constructor(
-    @inject(Component.OfferModel) private readonly commentModel: types.ModelType<CommentEntity>
+    @inject(Component.CommentModel) private readonly commentModel: types.ModelType<CommentEntity>
   ) {}
 
   public async create(dto: CreateCommentDto): Promise<DocumentType<CommentEntity>> {

@@ -25,9 +25,9 @@ export class DefaultFavoriteService implements FavoriteService {
   public async createOrDelete(dto: CreateFavoriteDto | DeleteFavoriteDto): Promise<DocumentType<FavoriteEntity> | null> {
     const isExistFavoriteEntity = await this.favoriteModel.exists(dto) !== null;
     if (isExistFavoriteEntity) {
-      return await this.favoriteModel.create(dto);
-    } else {
       return await this.favoriteModel.findOneAndDelete(dto).exec();
+    } else {
+      return await this.favoriteModel.create(dto);
     }
   }
 }
