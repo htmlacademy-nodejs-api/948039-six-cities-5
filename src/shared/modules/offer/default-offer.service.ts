@@ -7,6 +7,68 @@ import {Types} from 'mongoose';
 import { OfferService } from './offer-service.interface.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { DEFAULT_OFFER_COUNT, DEFAULT_PREMIUM_OFFER_COUNT } from './offer.constant.js';
+import { GetOffers } from './create-offer-request.type.js';
+
+const aggregate = [
+  {
+    $lookup: {
+      from: 'favorites',
+      let: { offerId: '$_id', userId: '$userId'},
+      pipeline: [
+        { $match:
+          { $expr:
+            { $and:
+               [
+                 { $eq: [ '$offerId', '$$offerId' ] },
+                 { $eq: [ '$userId', '$$userId' ] }
+               ]
+            }
+          }
+        },
+      ],
+      as: 'favorites'
+    },
+  },
+  {
+    $lookup: {
+      from: 'comments',
+      let: { offerId: '$_id'},
+      pipeline: [
+        { $match:
+          { $expr:
+            { $eq: [ '$offerId', '$$offerId' ] }
+          }
+        }
+      ],
+      as: 'comments'
+    }
+  },
+  { $addFields:
+    {
+      isFavorite: { $toBool: {$size: '$favorites'} },
+      rate: {$cond: [
+        {
+          $ne: [{
+            $size: '$comments'
+          },
+          0
+          ]
+        },
+        {$divide: [
+          {$reduce: {
+            input: '$comments',
+            initialValue: 0,
+            in: {$add: ['$$value', '$$this.rate'],}
+          }},
+          {$size: '$comments'}
+        ]},
+        0
+      ]}
+    }
+  },
+  { $unset: 'favorites' },
+  { $unset: 'comments' },
+];
 
 
 @injectable()
@@ -19,76 +81,20 @@ export class DefaultOfferService implements OfferService {
     return await this.offerModel.create(dto);
   }
 
-  public async find(count?: number): Promise<{ offers: DocumentType<OfferEntity>[]; }> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
+  public async find(query: GetOffers): Promise<DocumentType<OfferEntity>[]> {
+    const {size} = query;
+    const limit = size ?? DEFAULT_OFFER_COUNT;
     const offers = await this.offerModel
-      .aggregate([
-        {
-          $lookup: {
-            from: 'favorites',
-            let: { offerId: '$_id', userId: '$userId'},
-            pipeline: [
-              { $match:
-                { $expr:
-                  { $and:
-                     [
-                       { $eq: [ '$offerId', '$$offerId' ] },
-                       { $eq: [ '$userId', '$$userId' ] }
-                     ]
-                  }
-                }
-              },
-            ],
-            as: 'favorites'
-          },
-        },
-        {
-          $lookup: {
-            from: 'comments',
-            let: { offerId: '$_id'},
-            pipeline: [
-              { $match:
-                { $expr:
-                  { $eq: [ '$offerId', '$$offerId' ] }
-                }
-              }
-            ],
-            as: 'comments'
-          }
-        },
-        { $addFields:
-          {
-            isFavorite: { $toBool: {$size: '$favorites'} },
-            commentsRate: {$cond: [
-              {
-                $ne: [{
-                  $size: '$comments'
-                },
-                0
-                ]
-              },
-              {$divide: [
-                {$reduce: {
-                  input: '$comments',
-                  initialValue: 0,
-                  in: {$add: ['$$value', '$$this.rate'],}
-                }},
-                {$size: '$comments'}
-              ]},
-              0
-            ]}
-          }
-        },
-        { $unset: 'favorites' },
-        { $unset: 'comments' },
-      ])
+      .aggregate(aggregate)
       .limit(limit)
       .exec();
-    return {offers};
+    return offers;
   }
 
   async findById(id: Types.ObjectId): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findById(id).exec();
+    const findByIdResult: DocumentType<OfferEntity>[] = await this.offerModel.
+      aggregate([{$match: {_id: id}}, ...aggregate]).exec();
+    return Promise.resolve(findByIdResult[0] ?? null);
   }
 
   public async updateById(id: Types.ObjectId, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
