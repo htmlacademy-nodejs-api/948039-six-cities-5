@@ -4,11 +4,12 @@ import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
 import { DefaultUserService } from './default-user.service.js';
-import { CreateUserDto } from './dto/index.js';
 import { RestConfig } from '../../libs/config/rest.config.js';
 import {StatusCodes} from 'http-status-codes';
 import { UserRdo } from './rdo/user.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
+import { CreateUserRequest } from './create-user-request.type.js';
+import { HttpError } from '../../libs/rest/errors/http-error.js';
 
 export class UserController extends BaseController {
   constructor(
@@ -26,44 +27,42 @@ export class UserController extends BaseController {
     this.addRoute({ path: '/logout', method: HttpMethod.Get, handler: this.logout });
   }
 
-  public async register({ body }: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>, res: Response): Promise<void> {
+  public async register({ body }: CreateUserRequest, res: Response): Promise<void> {
     const existUser = await this.userService.findByEmail(body.email);
 
     if (existUser) {
-      const existUserError = new Error(`User with email «${body.email}» exists.`);
-      this.send(res,
-        StatusCodes.UNPROCESSABLE_ENTITY,
-        { error: existUserError.message }
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        `User with email «${body.email}» exists.`,
+        'UserController'
       );
-
-      return this.logger.error(existUserError.message, existUserError);
     }
 
     const result = await this.userService.create(body, this.config.get('SALT'));
     this.created(res, fillDTO(UserRdo, result));
   }
 
-  public login(_req: Request, res: Response): void {
-    const NotImplementedError = new Error('This methods not implements.');
-    this.send(res,
+  public login(_req: Request, _res: Response): void {
+    throw new HttpError(
       StatusCodes.NOT_IMPLEMENTED,
-      { error: NotImplementedError.message }
+      'This methods not implements.',
+      'UserController'
     );
   }
 
-  public checkIsLogin(_req: Request, res: Response): void {
-    const NotImplementedError = new Error('This methods not implements.');
-    this.send(res,
+  public checkIsLogin(_req: Request, _res: Response): void {
+    throw new HttpError(
       StatusCodes.NOT_IMPLEMENTED,
-      { error: NotImplementedError.message }
+      'This methods not implements.',
+      'UserController'
     );
   }
 
-  public logout(_req: Request, res: Response): void {
-    const NotImplementedError = new Error('This methods not implements.');
-    this.send(res,
+  public logout(_req: Request, _res: Response): void {
+    throw new HttpError(
       StatusCodes.NOT_IMPLEMENTED,
-      { error: NotImplementedError.message }
+      'This methods not implements.',
+      'UserController'
     );
   }
 }
