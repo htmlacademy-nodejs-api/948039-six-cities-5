@@ -6,6 +6,7 @@ export class UpdateOfferDto {
   public city?: City;
   public preview?: string;
   public images?: string[];
+  public isPremium?: boolean;
   public houseType?: HouseTypeEnum;
   public room?: number;
   public guest?: number;

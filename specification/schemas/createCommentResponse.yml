@@ -2,7 +2,7 @@ title: CreateCommentResponse
 type: object
 description: Создание нового комментария
 required:
-  - comment
+  - text
   - postDate
   - rate
   - userId

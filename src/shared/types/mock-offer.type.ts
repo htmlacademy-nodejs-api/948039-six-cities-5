@@ -8,8 +8,6 @@ export type MockOffer = {
   preview: string;
   images: string[];
   isPremium: boolean;
-  isFavorite: boolean;
-  rate: number;
   houseType: HouseTypeEnum;
   room: number;
   guest: number;

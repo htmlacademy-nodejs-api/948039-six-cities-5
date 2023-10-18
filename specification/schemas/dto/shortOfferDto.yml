@@ -2,6 +2,10 @@ title: shortOfferDto
 type: object
 description: минимальные данные обьявления
 properties:
+  id:
+    type: string
+    example: 'w313weqweqw'
+
   title:
     type: string
     example: Отель "Мариот"

@@ -8,13 +8,11 @@ export class CreateOfferDto {
   public preview: string;
   public images: string[];
   public isPremium: boolean;
-  public rate: number;
   public houseType: HouseTypeEnum;
   public room: number;
   public guest: number;
   public price: number;
   public conveniences: Convenience[];
   public userId: string;
-  commentsCount: number;
-  coords: [string, string];
+  public coords: [string, string];
 }

@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { getMongoURI } from '../../shared/helpers/index.js';
+import { generateRandomValue, getMongoURI, getRandomItem, getRandomItems } from '../../shared/helpers/index.js';
 import { createMockOffer } from '../../shared/helpers/offer.js';
 import { TSVFileReader } from '../../shared/libs/file-reader/index.js';
 import { Command } from './command.interface.js';
@@ -12,12 +12,20 @@ import { DEFAULT_USER_PASSWORD } from '../constant.js';
 import { MockOffer } from '../../shared/types/index.js';
 import chalk from 'chalk';
 import { Logger } from '../../shared/libs/logger/index.js';
+import { CreateOfferDto } from '../../shared/modules/offer/dto/create-offer.dto.js';
+import { DefaultCommentService } from '../../shared/modules/comment/default-comment.service.js';
+import { CreateCommentDto } from '../../shared/modules/comment/dto/createCommentDto.js';
+import { DefaultFavoriteService } from '../../shared/modules/favorite/default-favorite.service.js';
+import { CreateFavoriteDto } from '../../shared/modules/favorite/dto/createFavoriteDto.js';
 
 @injectable()
 export class ImportCommand implements Command {
+  private uniqUsers: Set<string> = new Set();
   constructor(
     @inject(Component.OfferService) private readonly offerService: DefaultOfferService,
     @inject(Component.UserService) private readonly userService: DefaultUserService,
+    @inject(Component.CommentService) private readonly commentService: DefaultCommentService,
+    @inject(Component.FavoriteService) private readonly favoriteService: DefaultFavoriteService,
     @inject(Component.Config) private readonly config: Config<RestSchema>,
     @inject(Component.DatabaseClient) private readonly databaseClient: DatabaseClient,
     @inject(Component.Logger) private readonly logger: Logger,
@@ -32,7 +40,9 @@ export class ImportCommand implements Command {
 
   private async onImportedLine(line: string, resolve: () => void) {
     const mockOffer = createMockOffer(line);
-    await this.createOffer(mockOffer);
+    const offerId = await this.createOffer(mockOffer);
+    await this.createComments(offerId);
+    await this.createFavorites(offerId);
     resolve();
   }
 
@@ -41,15 +51,45 @@ export class ImportCommand implements Command {
     await this.databaseClient.disconect();
   }
 
-  private async createOffer(mockOffer: MockOffer): Promise<void> {
+  private async createOffer(mockOffer: MockOffer): Promise<string> {
     const {user, ...rawOffer} = mockOffer;
     const userWithPassword = {
       ...user,
       password: DEFAULT_USER_PASSWORD
     };
     const userId = (await this.userService.findOrCreate(userWithPassword, this.config.get('SALT')))._id.toString();
-    const offer = {...rawOffer , userId};
-    await this.offerService.create(offer);
+    this.uniqUsers.add(userId);
+    const offer:CreateOfferDto = {...rawOffer , userId};
+    const offerId = (await this.offerService.create(offer))._id.toString();
+    return offerId;
+  }
+
+  private async createComments(offerId: string): Promise<void> {
+    const users = Array.from(this.uniqUsers);
+    const randomCommentCount = generateRandomValue(0, 10);
+    for (let i = 0; i < randomCommentCount; i++) {
+      const randomUser = getRandomItem(users);
+      const comment: CreateCommentDto = {
+        text: getRandomItem(['Все было круто!', 'В целом неплохо', 'Все было ужасно']),
+        offerId,
+        userId: randomUser,
+        rate: generateRandomValue(1, 5),
+      };
+
+      await this.commentService.create(comment);
+    }
+  }
+
+  private async createFavorites(offerId: string): Promise<void> {
+    const users = Array.from(this.uniqUsers);
+    const randomUniqUsers = getRandomItems(users);
+    for (let i = 0; i < randomUniqUsers.length; i++) {
+      const favoriteDto: CreateFavoriteDto = {
+        userId: randomUniqUsers[i],
+        offerId
+      };
+      await this.favoriteService.createOrDelete(favoriteDto);
+    }
   }
 
   private async _initDb() {

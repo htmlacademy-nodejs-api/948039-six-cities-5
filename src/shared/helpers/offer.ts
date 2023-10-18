@@ -1,7 +1,7 @@
 import { City, Convenience, HouseTypeEnum, MockOffer, UserTypeEnum } from '../types/index.js';
 
 export function createMockOffer(offerData: string): MockOffer {
-  const [title, description, postDate, city, preview, images, isPremium, isFavorite, rate, houseType, room, guest, price, conveniences, name, email, avatar, type, commentsCount, coords] = offerData.replace('\n', '').split('\t');
+  const [title, description, postDate, city, preview, images, isPremium, houseType, room, guest, price, conveniences, name, email, avatar, type, commentsCount, coords] = offerData.replace('\n', '').split('\t');
   const [lat, lon] = coords.split(';');
   return {
     title,
@@ -11,8 +11,6 @@ export function createMockOffer(offerData: string): MockOffer {
     preview,
     images: images.split(';'),
     isPremium: isPremium === 'true',
-    isFavorite: isFavorite === 'true',
-    rate: Number.parseInt(rate, 10),
     houseType: houseType as HouseTypeEnum,
     room: Number.parseInt(room, 10),
     guest: Number.parseInt(guest, 10),
