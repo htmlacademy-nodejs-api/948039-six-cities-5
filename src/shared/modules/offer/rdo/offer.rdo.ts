@@ -1,8 +1,10 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, Exclude } from 'class-transformer';
 
 export class ShortOfferRdo {
-  @Expose({name: '_id'})
-  @Transform(({value}) => value.toString())
+  // NEEDS ASK
+  // Почему класс матчит userId к полю _id
+  @Expose()
+  @Transform((query) => query.obj['_id'])
   public id: string;
 
   @Expose()
@@ -21,23 +23,23 @@ export class ShortOfferRdo {
   public isPremium: boolean;
 
   @Expose()
-  public isFavorite: boolean = false;
+  public isFavorite: boolean;
 
   @Expose()
-  @Transform(({ value }: {value: number}) => +value.toFixed(2))
-  public rate: number = 0;
+  @Transform(({value}) => value ? +value.toFixed(1) : 0)
+  public rate: number;
 
   @Expose()
   public houseType: string;
 
   @Expose()
   public price: number;
-
-  @Expose()
-  public commentsCount: number;
 }
 
 export class OfferRdo {
+  @Exclude()
+  public _id: string;
+
   @Expose()
   public title: string;
 
@@ -60,11 +62,11 @@ export class OfferRdo {
   public isPremium: boolean;
 
   @Expose()
-  public isFavorite: boolean = false;
+  public isFavorite: boolean;
 
   @Expose()
-  @Transform(({ value }: {value: number}) => value.toFixed(2), { toClassOnly: true })
-  public rate: number = 0;
+  @Transform(({value}) => value ? +value.toFixed(1) : 0)
+  public rate: number;
 
   @Expose()
   public houseType: string;
@@ -81,11 +83,11 @@ export class OfferRdo {
   @Expose()
   public conveniences: string[];
 
+  // NEEDS ASK
+  // Почему класс матчит userId к полю _id
   @Expose()
+  @Transform((query) => query.obj[query.key])
   public userId: string;
-
-  @Expose()
-  public commentsCount: number;
 
   @Expose()
   public coords: [string, string];

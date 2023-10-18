@@ -14,6 +14,5 @@ export class CreateOfferDto {
   public price: number;
   public conveniences: Convenience[];
   public userId: string;
-  public commentsCount: number;
   public coords: [string, string];
 }

@@ -6,7 +6,7 @@ import { CreateOfferDto } from './dto/create-offer.dto.js';
 import {Types} from 'mongoose';
 import { OfferService } from './offer-service.interface.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
-import { DEFAULT_OFFER_COUNT, DEFAULT_PREMIUM_OFFER_COUNT } from './offer.constant.js';
+import { DEFAULT_OFFER_COUNT } from './offer.constant.js';
 import { GetOffers } from './create-offer-request.type.js';
 
 const aggregate = [
@@ -83,22 +83,35 @@ export class DefaultOfferService implements OfferService {
 
   public async find(query: GetOffers): Promise<DocumentType<OfferEntity>[]> {
     const {size} = query;
-    const limit = size ?? DEFAULT_OFFER_COUNT;
+    const limit = Number(size ?? DEFAULT_OFFER_COUNT);
+    const matchCity = query.city ? { $expr:
+      { $and:
+         [
+           { $eq: [ '$city', query.city ] },
+           { $eq: [ '$isPremium', true ] }
+         ]
+      }
+    } : {};
     const offers = await this.offerModel
       .aggregate(aggregate)
+      .match(matchCity)
       .limit(limit)
+      .sort({ createdAt: SortType.Down })
       .exec();
     return offers;
   }
 
   async findById(id: Types.ObjectId): Promise<DocumentType<OfferEntity> | null> {
-    const findByIdResult: DocumentType<OfferEntity>[] = await this.offerModel.
-      aggregate([{$match: {_id: id}}, ...aggregate]).exec();
+    const findByIdResult: DocumentType<OfferEntity>[] = await this.offerModel
+      .aggregate([{$match: {_id: id}}, ...aggregate]).exec();
+
     return Promise.resolve(findByIdResult[0] ?? null);
   }
 
   public async updateById(id: Types.ObjectId, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
-    return await this.offerModel.findByIdAndUpdate(id, dto, {new: true}).exec();
+
+    await this.offerModel.findByIdAndUpdate(id, dto, {new: true}).exec();
+    return this.findById(id);
   }
 
   public async incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null> {
@@ -107,9 +120,5 @@ export class DefaultOfferService implements OfferService {
 
   public async deleteById(id: Types.ObjectId): Promise<DocumentType<OfferEntity> | null>{
     return await this.offerModel.findByIdAndDelete(id).exec();
-  }
-
-  public async findPremiumByCityName(city: string): Promise<DocumentType<OfferEntity>[] | null> {
-    return await this.offerModel.find({isPremium: true, city}).sort({ createdAt: SortType.Down }).limit(DEFAULT_PREMIUM_OFFER_COUNT).exec();
   }
 }

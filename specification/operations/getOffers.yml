@@ -4,10 +4,22 @@ tags:
 summary: Получение списка предложений
 parameters:
   - in: query
-    name: count
+    name: size
     schema:
       type: number
       example: 60
+  - in: query
+    name: city
+    schema:
+      type: string
+      enum:
+        - Paris
+        - Cologne
+        - Brussels
+        - Amsterdam
+        - Hamburg
+        - Dusseldorf
+      example: Paris
 $ref: ../schemas/all.yml#/GetOffersRequest
 responses:
   200:

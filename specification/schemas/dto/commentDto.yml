@@ -2,7 +2,7 @@ title: commentDto
 type: object
 description: данные комментария
 properties:
-  comment:
+  text:
     type: string
     example: Прекарсный комментарий
 
@@ -15,8 +15,8 @@ properties:
     type: number
     minimum: 1
     maximum: 5
-    format: float
-    example: 4.3
+    format: int32
+    example: 4
 
   userId:
     type: string

@@ -15,8 +15,6 @@ tags:
     description: Действия с объявлениями.
   - name: comments
     description: Действия с комментариями.
-  - name: premiums
-    description: Действия с премиальными обьявлениями.
   - name: favorites
     description: Действия с избранными обьявлениями.
 
@@ -49,9 +47,6 @@ paths:
       $ref: ./operations/getCommentsByOfferId.yml
     post:
       $ref: ./operations/createCommentByOfferId.yml
-  /premiums/[city]:
-    get:
-      $ref: ./operations/getOffersByCityId.yml
   /favorites/[userId]:
     get:
       $ref: ./operations/getFavoriteOffers.yml

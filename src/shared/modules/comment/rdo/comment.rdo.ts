@@ -11,6 +11,6 @@ export class CommentRdo {
   public createdAt: string;
 
   @Expose()
-  @Transform(({value}) => value.toString())
+  @Transform((query) => query.obj[query.key])
   public userId: string;
 }

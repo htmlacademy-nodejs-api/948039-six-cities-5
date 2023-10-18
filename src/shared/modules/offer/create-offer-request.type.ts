@@ -4,7 +4,7 @@ import { CreateOfferDto } from './dto/index.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 
 export interface GetOffers {
-  size?: number,
+  size?: string,
   city?: string,
 }
 

@@ -28,10 +28,9 @@ export class OfferController extends BaseController {
   }
 
   public async create({body}: CreateOfferRequest, res: Response): Promise<void> {
-
-    const result = await this.offerService.create(body);
-
-    this.created(res, fillDTO(OfferRdo, result));
+    const newOffer = await this.offerService.create(body);
+    const createdOffer = Object.assign(newOffer , {isFavorite: false , rate: 0});
+    this.created(res, fillDTO(OfferRdo, createdOffer));
   }
 
   public async find({query}: GetOffersRequest, res: Response): Promise<void> {
