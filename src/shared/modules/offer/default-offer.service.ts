@@ -7,7 +7,7 @@ import {Types} from 'mongoose';
 import { OfferService } from './offer-service.interface.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { DEFAULT_OFFER_COUNT } from './offer.constant.js';
-import { GetOffers } from './create-offer-request.type.js';
+import { FindQuery } from './offer-request.type.js';
 
 const aggregate = [
   {
@@ -81,7 +81,7 @@ export class DefaultOfferService implements OfferService {
     return await this.offerModel.create(dto);
   }
 
-  public async find(query: GetOffers): Promise<DocumentType<OfferEntity>[]> {
+  public async find(query: FindQuery): Promise<DocumentType<OfferEntity>[]> {
     const {size} = query;
     const limit = Number(size ?? DEFAULT_OFFER_COUNT);
     const matchCity = query.city ? { $expr:

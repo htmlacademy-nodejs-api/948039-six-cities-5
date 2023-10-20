@@ -12,6 +12,7 @@ import { ShortOfferRdo } from '../offer/rdo/offer.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
 import { DocumentType } from '@typegoose/typegoose';
 import { OfferEntity } from '../offer/offer.entity.js';
+import { FindByIdRequestParams } from './favorite-request.type.js';
 
 export class FavoriteController extends BaseController {
   constructor(
@@ -26,7 +27,7 @@ export class FavoriteController extends BaseController {
     this.addRoute({ path: '/:id', method: HttpMethod.Put, handler: this.updateById });
   }
 
-  public async findById({params}: Request, res: Response): Promise<void> {
+  public async findById({params}: Request<FindByIdRequestParams>, res: Response): Promise<void> {
     const id = new mongoose.Types.ObjectId(params.id);
     const favorites: DocumentType<FavoriteEntity & {offer: OfferEntity}>[] = await this.favoriteService.findByUserId(id);
     const favoriteOffers = favorites.map((favorites) => favorites.offer);

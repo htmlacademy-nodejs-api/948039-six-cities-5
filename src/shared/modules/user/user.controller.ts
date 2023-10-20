@@ -8,7 +8,7 @@ import { RestConfig } from '../../libs/config/rest.config.js';
 import {StatusCodes} from 'http-status-codes';
 import { UserRdo } from './rdo/user.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
-import { CreateUserRequest } from './create-user-request.type.js';
+import { CreateUserRequest } from './user-request.type.js';
 import { HttpError } from '../../libs/rest/errors/http-error.js';
 
 export class UserController extends BaseController {
