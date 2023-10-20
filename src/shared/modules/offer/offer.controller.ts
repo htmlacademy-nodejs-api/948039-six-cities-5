@@ -1,5 +1,5 @@
 import { inject } from 'inversify';
-import { BaseController, HttpMethod } from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
@@ -22,9 +22,24 @@ export class OfferController extends BaseController {
 
     this.addRoute({ path: '/', method: HttpMethod.Post, handler: this.create });
     this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.find });
-    this.addRoute({ path: '/:id', method: HttpMethod.Get, handler: this.findById });
-    this.addRoute({ path: '/:id', method: HttpMethod.Put, handler: this.updateById });
-    this.addRoute({ path: '/:id', method: HttpMethod.Delete, handler: this.deleteById });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.Get,
+      handler: this.findById,
+      middlewares: [new ValidateObjectIdMiddleware('id')]
+    });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.Put,
+      handler: this.updateById,
+      middlewares: [new ValidateObjectIdMiddleware('id')]
+    });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.Delete,
+      handler: this.deleteById,
+      middlewares: [new ValidateObjectIdMiddleware('id')]
+    });
   }
 
   public async create({body}: CreateRequest, res: Response): Promise<void> {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import { StatusCodes } from 'http-status-codes';
 import { inject } from 'inversify';
-import { BaseController, HttpMethod } from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
@@ -23,8 +23,18 @@ export class FavoriteController extends BaseController {
 
     this.logger.info('Register routes for FavoriteController…');
 
-    this.addRoute({ path: '/:id', method: HttpMethod.Get, handler: this.findById });
-    this.addRoute({ path: '/:id', method: HttpMethod.Put, handler: this.updateById });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.Get,
+      handler: this.findById,
+      middlewares: [new ValidateObjectIdMiddleware('id')]
+    });
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.Put,
+      handler: this.updateById,
+      middlewares: [new ValidateObjectIdMiddleware('id')]
+    });
   }
 
   public async findById({params}: Request<FindByIdRequestParams>, res: Response): Promise<void> {
