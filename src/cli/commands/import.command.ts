@@ -74,6 +74,7 @@ export class ImportCommand implements Command {
         offerId,
         userId: randomUser,
         rate: generateRandomValue(1, 5),
+        postedDate: new Date(),
       };
 
       await this.commentService.create(comment);

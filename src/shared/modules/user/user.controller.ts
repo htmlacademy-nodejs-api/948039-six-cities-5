@@ -1,5 +1,5 @@
 import { inject } from 'inversify';
-import { BaseController, HttpMethod } from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, ValidateDtoMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
@@ -10,6 +10,7 @@ import { UserRdo } from './rdo/user.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
 import { CreateUserRequest } from './user-request.type.js';
 import { HttpError } from '../../libs/rest/errors/http-error.js';
+import { CreateUserDto } from './dto/create-user.dto.js';
 
 export class UserController extends BaseController {
   constructor(
@@ -21,7 +22,14 @@ export class UserController extends BaseController {
 
     this.logger.info('Register routes for UserController…');
 
-    this.addRoute({ path: '/register', method: HttpMethod.Post, handler: this.register });
+    this.addRoute({
+      path: '/register',
+      method: HttpMethod.Post,
+      handler: this.register,
+      middlewares: [
+        new ValidateDtoMiddleware(CreateUserDto)
+      ]
+    });
     this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login });
     this.addRoute({ path: '/login', method: HttpMethod.Get, handler: this.checkIsLogin });
     this.addRoute({ path: '/logout', method: HttpMethod.Get, handler: this.logout });

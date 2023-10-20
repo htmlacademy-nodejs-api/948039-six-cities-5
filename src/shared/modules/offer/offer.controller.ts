@@ -1,5 +1,5 @@
 import { inject } from 'inversify';
-import { BaseController, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
@@ -10,6 +10,8 @@ import { UpdateByIdRequest, CreateRequest, DeleteByIdRequestParams, FindByIdRequ
 import { DefaultOfferService } from './index.js';
 import { OfferRdo, ShortOfferRdo } from './rdo/offer.rdo.js';
 import mongoose from 'mongoose';
+import { CreateOfferDto } from './dto/create-offer.dto.js';
+import { UpdateOfferDto } from './dto/update-offer.dto.js';
 
 export class OfferController extends BaseController {
   constructor(
@@ -20,7 +22,12 @@ export class OfferController extends BaseController {
 
     this.logger.info('Register routes for OfferController…');
 
-    this.addRoute({ path: '/', method: HttpMethod.Post, handler: this.create });
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Post,
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)]
+    });
     this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.find });
     this.addRoute({
       path: '/:id',
@@ -32,7 +39,10 @@ export class OfferController extends BaseController {
       path: '/:id',
       method: HttpMethod.Put,
       handler: this.updateById,
-      middlewares: [new ValidateObjectIdMiddleware('id')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new ValidateDtoMiddleware(UpdateOfferDto)
+      ]
     });
     this.addRoute({
       path: '/:id',

@@ -1,5 +1,5 @@
 import { inject } from 'inversify';
-import { BaseController, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
@@ -10,6 +10,7 @@ import { CommentRdo } from './rdo/comment.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
 import { CreateCommentRequest, FindByIdRequestParams } from './comment-request.type.js';
 import { CreateCommentDto } from './dto/createCommentDto.js';
+
 export class CommentController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
@@ -29,7 +30,10 @@ export class CommentController extends BaseController {
       path: '/:id',
       method: HttpMethod.Post,
       handler: this.createById,
-      middlewares: [new ValidateObjectIdMiddleware('id')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new ValidateDtoMiddleware(CreateCommentDto)
+      ]
     });
   }
 
