@@ -3,9 +3,7 @@ import { BaseController, DocumentExistsMiddleware, HttpMethod, ValidateDtoMiddle
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
-import {StatusCodes} from 'http-status-codes';
 import { fillDTO } from '../../helpers/index.js';
-import { HttpError } from '../../libs/rest/errors/http-error.js';
 import { UpdateByIdRequest, CreateRequest, DeleteByIdRequestParams, FindByIdRequestParams, FindRequest } from './offer-request.type.js';
 import { DefaultOfferService } from './index.js';
 import { OfferRdo, ShortOfferRdo } from './rdo/offer.rdo.js';
@@ -35,7 +33,7 @@ export class OfferController extends BaseController {
       handler: this.findById,
       middlewares: [
         new ValidateObjectIdMiddleware('id'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'id')
       ]
     });
     this.addRoute({
@@ -44,7 +42,7 @@ export class OfferController extends BaseController {
       handler: this.updateById,
       middlewares: [
         new ValidateObjectIdMiddleware('id'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'id'),
         new ValidateDtoMiddleware(UpdateOfferDto)
       ]
     });
@@ -54,7 +52,7 @@ export class OfferController extends BaseController {
       handler: this.deleteById,
       middlewares: [
         new ValidateObjectIdMiddleware('id'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'id'),
       ]
     });
   }

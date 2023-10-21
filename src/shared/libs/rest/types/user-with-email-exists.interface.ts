@@ -1,3 +1,3 @@
 export interface UserWithEmailExists {
-  exists(email: string): Promise<boolean>;
+  existsWithEmail(email: string): Promise<boolean>;
 }
