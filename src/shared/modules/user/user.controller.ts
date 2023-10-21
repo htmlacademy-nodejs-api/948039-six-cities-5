@@ -11,6 +11,7 @@ import { fillDTO } from '../../helpers/index.js';
 import { CreateUserRequest } from './user-request.type.js';
 import { HttpError } from '../../libs/rest/errors/http-error.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
+import { UserWithEmailExistsMiddleware } from '../../libs/rest/middleware/user-with-email-exists.middleware.js';
 
 export class UserController extends BaseController {
   constructor(
@@ -27,6 +28,7 @@ export class UserController extends BaseController {
       method: HttpMethod.Post,
       handler: this.register,
       middlewares: [
+        new UserWithEmailExistsMiddleware(this.userService, 'User'),
         new ValidateDtoMiddleware(CreateUserDto)
       ]
     });
@@ -36,16 +38,6 @@ export class UserController extends BaseController {
   }
 
   public async register({ body }: CreateUserRequest, res: Response): Promise<void> {
-    const existUser = await this.userService.findByEmail(body.email);
-
-    if (existUser) {
-      throw new HttpError(
-        StatusCodes.CONFLICT,
-        `User with email «${body.email}» exists.`,
-        'UserController'
-      );
-    }
-
     const result = await this.userService.create(body, this.config.get('SALT'));
     this.created(res, fillDTO(UserRdo, result));
   }

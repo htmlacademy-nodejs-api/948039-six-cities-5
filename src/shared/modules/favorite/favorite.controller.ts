@@ -41,7 +41,6 @@ export class FavoriteController extends BaseController {
     const id = new mongoose.Types.ObjectId(params.id);
     const favorites: DocumentType<FavoriteEntity & {offer: OfferEntity}>[] = await this.favoriteService.findByUserId(id);
     const favoriteOffers = favorites.map((favorites) => favorites.offer);
-
     this.ok(res, fillDTO(ShortOfferRdo, favoriteOffers));
   }
 
