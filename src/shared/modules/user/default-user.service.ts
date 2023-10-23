@@ -23,8 +23,20 @@ export class DefaultUserService implements UserService {
     return this.userModel.findById(id);
   }
 
+  public async updateById(id: Types.ObjectId, avatar: string): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findByIdAndUpdate(id, {avatar}, {new: true}).exec();
+  }
+
   public async findByEmail(email: string): Promise<DocumentType<UserEntity> | null> {
     return this.userModel.findOne({email});
+  }
+
+  public async existsWithEmail(email: string): Promise<boolean> {
+    return this.userModel.findOne({email}) !== null;
+  }
+
+  public async exists(userId: string): Promise<boolean> {
+    return this.userModel.exists({_id: userId}) !== null;
   }
 
   public async findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {

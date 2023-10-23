@@ -4,9 +4,10 @@ import { Types } from 'mongoose';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { FindQuery } from './offer-request.type.js';
+import { DocumentExists } from '../../libs/rest/index.js';
 
 
-export interface OfferService {
+export interface OfferService extends DocumentExists {
   create(dto: CreateOfferDto, salt: string): Promise<DocumentType<OfferEntity>>;
   findById(id: Types.ObjectId): Promise<DocumentType<OfferEntity> | null>;
   updateById(id:Types.ObjectId, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null>;

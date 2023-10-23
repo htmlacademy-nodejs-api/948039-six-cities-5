@@ -46,6 +46,7 @@ const aggregate = [
   { $addFields:
     {
       isFavorite: { $toBool: {$size: '$favorites'} },
+      commentCount: { $size: '$comments' },
       rate: {$cond: [
         {
           $ne: [{
@@ -104,12 +105,10 @@ export class DefaultOfferService implements OfferService {
   async findById(id: Types.ObjectId): Promise<DocumentType<OfferEntity> | null> {
     const findByIdResult: DocumentType<OfferEntity>[] = await this.offerModel
       .aggregate([{$match: {_id: id}}, ...aggregate]).exec();
-
-    return Promise.resolve(findByIdResult[0] ?? null);
+    return findByIdResult[0] ?? null;
   }
 
   public async updateById(id: Types.ObjectId, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
-
     await this.offerModel.findByIdAndUpdate(id, dto, {new: true}).exec();
     return this.findById(id);
   }
@@ -120,5 +119,10 @@ export class DefaultOfferService implements OfferService {
 
   public async deleteById(id: Types.ObjectId): Promise<DocumentType<OfferEntity> | null>{
     return await this.offerModel.findByIdAndDelete(id).exec();
+  }
+
+  public async exists(documentId: string): Promise<boolean> {
+    return (await this.offerModel
+      .exists({_id: documentId})) !== null;
   }
 }

@@ -1,11 +1,9 @@
 import { inject } from 'inversify';
-import { BaseController, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { BaseController, DocumentExistsMiddleware, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
-import {StatusCodes} from 'http-status-codes';
 import { fillDTO } from '../../helpers/index.js';
-import { HttpError } from '../../libs/rest/errors/http-error.js';
 import { UpdateByIdRequest, CreateRequest, DeleteByIdRequestParams, FindByIdRequestParams, FindRequest } from './offer-request.type.js';
 import { DefaultOfferService } from './index.js';
 import { OfferRdo, ShortOfferRdo } from './rdo/offer.rdo.js';
@@ -33,7 +31,10 @@ export class OfferController extends BaseController {
       path: '/:id',
       method: HttpMethod.Get,
       handler: this.findById,
-      middlewares: [new ValidateObjectIdMiddleware('id')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'id')
+      ]
     });
     this.addRoute({
       path: '/:id',
@@ -41,6 +42,7 @@ export class OfferController extends BaseController {
       handler: this.updateById,
       middlewares: [
         new ValidateObjectIdMiddleware('id'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'id'),
         new ValidateDtoMiddleware(UpdateOfferDto)
       ]
     });
@@ -48,7 +50,10 @@ export class OfferController extends BaseController {
       path: '/:id',
       method: HttpMethod.Delete,
       handler: this.deleteById,
-      middlewares: [new ValidateObjectIdMiddleware('id')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'id'),
+      ]
     });
   }
 
@@ -66,43 +71,18 @@ export class OfferController extends BaseController {
   public async findById({params}: Request<FindByIdRequestParams>, res: Response): Promise<void> {
     const id = new mongoose.Types.ObjectId(params.id);
     const existOffer = await this.offerService.findById(id);
-
-    if (!existOffer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id «${params.id}» not exists.`,
-        'OfferController'
-      );
-    }
     this.ok(res, fillDTO(OfferRdo, existOffer));
   }
 
   public async updateById({params, body}: UpdateByIdRequest, res: Response): Promise<void> {
     const id = new mongoose.Types.ObjectId(params.id);
-    const existOffer = await this.offerService.findById(id);
-
-    if (!existOffer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id «${params.id}» not exists.`,
-        'OfferController'
-      );
-    }
     const updatedOffer = await this.offerService.updateById(id, body);
     this.ok(res, fillDTO(OfferRdo, updatedOffer));
   }
 
   public async deleteById({params}: Request<DeleteByIdRequestParams>, res: Response): Promise<void> {
     const id = new mongoose.Types.ObjectId(params.id);
-    const existOffer = await this.offerService.deleteById(id);
-
-    if (!existOffer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id «${params.id}» not exists.`,
-        'OfferController'
-      );
-    }
+    await this.offerService.deleteById(id);
     this.noContent(res, {});
   }
 }

@@ -1,5 +1,5 @@
 import { inject } from 'inversify';
-import { BaseController, HttpMethod, ValidateDtoMiddleware } from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, UploadFileMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
@@ -8,9 +8,12 @@ import { RestConfig } from '../../libs/config/rest.config.js';
 import {StatusCodes} from 'http-status-codes';
 import { UserRdo } from './rdo/user.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
-import { CreateUserRequest } from './user-request.type.js';
+import { CreateUserRequest, UpdateByIdRequestParams } from './user-request.type.js';
 import { HttpError } from '../../libs/rest/errors/http-error.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
+import { UserWithEmailExistsMiddleware } from '../../libs/rest/middleware/user-with-email-exists.middleware.js';
+import mongoose from 'mongoose';
+import { UserExistsMiddleware } from '../../libs/rest/middleware/user-exists.middleware.js';
 
 export class UserController extends BaseController {
   constructor(
@@ -27,25 +30,26 @@ export class UserController extends BaseController {
       method: HttpMethod.Post,
       handler: this.register,
       middlewares: [
+        new UserWithEmailExistsMiddleware(this.userService, 'User'),
         new ValidateDtoMiddleware(CreateUserDto)
       ]
     });
     this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login });
     this.addRoute({ path: '/login', method: HttpMethod.Get, handler: this.checkIsLogin });
     this.addRoute({ path: '/logout', method: HttpMethod.Get, handler: this.logout });
+    this.addRoute({
+      path: '/:id/avatar',
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        new UserExistsMiddleware(this.userService, 'User', 'id'),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar'),
+      ]
+    });
   }
 
   public async register({ body }: CreateUserRequest, res: Response): Promise<void> {
-    const existUser = await this.userService.findByEmail(body.email);
-
-    if (existUser) {
-      throw new HttpError(
-        StatusCodes.CONFLICT,
-        `User with email «${body.email}» exists.`,
-        'UserController'
-      );
-    }
-
     const result = await this.userService.create(body, this.config.get('SALT'));
     this.created(res, fillDTO(UserRdo, result));
   }
@@ -72,5 +76,13 @@ export class UserController extends BaseController {
       'This methods not implements.',
       'UserController'
     );
+  }
+
+  public async uploadAvatar({params, file}: Request<UpdateByIdRequestParams>, res: Response) {
+    const id = new mongoose.Types.ObjectId(params.id);
+    await this.userService.updateById(id, file!.filename);
+    this.created(res, {
+      filepath: file?.path
+    });
   }
 }
