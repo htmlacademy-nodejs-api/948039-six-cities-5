@@ -3,6 +3,8 @@ import multer, { diskStorage } from 'multer';
 import { extension } from 'mime-types';
 import {nanoid} from 'nanoid';
 import { Middleware } from './middleware.interface.js';
+import { HttpError } from '../errors/index.js';
+import { StatusCodes } from 'http-status-codes';
 
 export class UploadFileMiddleware implements Middleware {
   constructor(
@@ -14,9 +16,18 @@ export class UploadFileMiddleware implements Middleware {
     const storage = diskStorage({
       destination: this.uploadDirectory,
       filename: (_req, file, callback) => {
+        let validateError = null;
         const fileExtention = extension(file.mimetype);
+        const isValid = fileExtention === 'jpg' || fileExtention === 'png';
         const filename = nanoid();
-        callback(null, `${filename}.${fileExtention}`);
+        if (!isValid) {
+          validateError = new HttpError(
+            StatusCodes.BAD_REQUEST,
+            `Not vaild fileExtention: ${fileExtention}. Expected png or jpg`,
+            'UploadFileMiddleware'
+          );
+        }
+        callback(validateError, `${filename}.${fileExtention}`);
       }
     });
 
