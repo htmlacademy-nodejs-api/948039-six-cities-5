@@ -3,8 +3,8 @@ export const CreateCommentValidationMessage = {
     invalidFormat: 'Text must be string',
     length: 'Text length must be into range 5 - 1024',
   },
-  postedDate: {
-    invalidFormat: 'postedDate must be a valid ISO date',
+  postDate: {
+    invalidFormat: 'postDate must be a valid ISO date',
   },
   rate: {
     invalidFormat: 'rate must be an integer',

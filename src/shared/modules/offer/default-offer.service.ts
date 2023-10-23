@@ -46,6 +46,7 @@ const aggregate = [
   { $addFields:
     {
       isFavorite: { $toBool: {$size: '$favorites'} },
+      commentCount: { $size: '$comments' },
       rate: {$cond: [
         {
           $ne: [{

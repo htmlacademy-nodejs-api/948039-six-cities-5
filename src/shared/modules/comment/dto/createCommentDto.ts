@@ -15,6 +15,6 @@ export class CreateCommentDto {
   @Max(5,{message: CreateCommentValidationMessage.rate.maxValue})
   public rate: number;
 
-  @IsDateString({}, {message: CreateCommentValidationMessage.postedDate.invalidFormat})
-  public postedDate: Date;
+  @IsDateString({}, {message: CreateCommentValidationMessage.postDate.invalidFormat})
+  public postDate: Date;
 }
