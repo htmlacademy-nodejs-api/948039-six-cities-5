@@ -1,5 +1,5 @@
 import { City, HouseTypeEnum ,Convenience} from '../../../types/index.js';
-import { IsString, IsBoolean, IsEnum, IsArray, Length , IsDateString, IsIn, IsInt, Max, Min, IsMongoId, ArrayNotEmpty, ArrayMaxSize, ArrayMinSize} from 'class-validator';
+import { IsString, IsBoolean, IsEnum, IsArray, Length , IsDateString, IsIn, IsInt, Max, Min, ArrayNotEmpty, ArrayMaxSize, ArrayMinSize} from 'class-validator';
 import { CreateOfferValidationMessage } from './create-offer.message.js';
 
 export class CreateOfferDto {
@@ -53,7 +53,6 @@ export class CreateOfferDto {
   @IsIn(['Breakfast', 'Air conditioning', 'Laptop friendly workspace', 'Baby seat', 'Washer', 'Towels', 'Fridge'], {each: true, message: CreateOfferValidationMessage.conveniences.invalidValue})
   public conveniences: Convenience[];
 
-  @IsMongoId({message: CreateOfferValidationMessage.userId.invalidId})
   public userId: string;
 
   @IsArray({message: CreateOfferValidationMessage.coords.invalidFormat})

@@ -16,7 +16,7 @@ import { CreateOfferDto } from '../../shared/modules/offer/dto/create-offer.dto.
 import { DefaultCommentService } from '../../shared/modules/comment/default-comment.service.js';
 import { CreateCommentDto } from '../../shared/modules/comment/dto/createCommentDto.js';
 import { DefaultFavoriteService } from '../../shared/modules/favorite/default-favorite.service.js';
-import { CreateFavoriteDto } from '../../shared/modules/favorite/dto/createFavoriteDto.js';
+import { CreateFavoriteDto } from '../../shared/modules/favorite/dto/create-favorite.dto.js';
 
 @injectable()
 export class ImportCommand implements Command {
@@ -66,8 +66,8 @@ export class ImportCommand implements Command {
 
   private async createComments(offerId: string): Promise<void> {
     const users = Array.from(this.uniqUsers);
-    const randomCommentCount = generateRandomValue(0, 10);
-    for (let i = 0; i < randomCommentCount; i++) {
+    const randomCommentsCount = generateRandomValue(0, 10);
+    for (let i = 0; i < randomCommentsCount; i++) {
       const randomUser = getRandomItem(users);
       const comment: CreateCommentDto = {
         text: getRandomItem(['Все было круто!', 'В целом неплохо', 'Все было ужасно']),

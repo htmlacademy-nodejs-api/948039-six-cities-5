@@ -24,11 +24,11 @@ export class DefaultCommentService implements CommentService {
       .limit(limit).exec();
   }
 
-  public async deleteByOfferId(offerId: Types.ObjectId): Promise<number> {
-    const result = await this.commentModel
+  public async deleteByOfferId(offerId: Types.ObjectId): Promise<null> {
+    await this.commentModel
       .deleteMany({offerId})
       .exec();
 
-    return result.deletedCount;
+    return null;
   }
 }

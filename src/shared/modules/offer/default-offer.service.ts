@@ -3,32 +3,13 @@ import { Component, SortType } from '../../types/index.js';
 import { OfferEntity } from './offer.entity.js';
 import { inject, injectable } from 'inversify';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
-import {Types} from 'mongoose';
+import mongoose, {Types} from 'mongoose';
 import { OfferService } from './offer-service.interface.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { DEFAULT_OFFER_COUNT } from './offer.constant.js';
 import { FindQuery } from './offer-request.type.js';
 
-const aggregate = [
-  {
-    $lookup: {
-      from: 'favorites',
-      let: { offerId: '$_id', userId: '$userId'},
-      pipeline: [
-        { $match:
-          { $expr:
-            { $and:
-               [
-                 { $eq: [ '$offerId', '$$offerId' ] },
-                 { $eq: [ '$userId', '$$userId' ] }
-               ]
-            }
-          }
-        },
-      ],
-      as: 'favorites'
-    },
-  },
+const aggregateComments = [
   {
     $lookup: {
       from: 'comments',
@@ -45,8 +26,7 @@ const aggregate = [
   },
   { $addFields:
     {
-      isFavorite: { $toBool: {$size: '$favorites'} },
-      commentCount: { $size: '$comments' },
+      commentsCount: { $size: '$comments' },
       rate: {$cond: [
         {
           $ne: [{
@@ -67,10 +47,42 @@ const aggregate = [
       ]}
     }
   },
-  { $unset: 'favorites' },
   { $unset: 'comments' },
 ];
 
+const aggregateDefaultFavorite = [
+  { $addFields:
+    { isFavorite: false }
+  }
+];
+
+const aggregateFavorite = (userId: string) => ([
+  {
+    $lookup: {
+      from: 'favorites',
+      let: { offerId: '$_id'},
+      pipeline: [
+        { $match:
+          { $expr:
+            { $and:
+                [
+                  { $eq: [ '$offerId', '$$offerId' ] },
+                  { $eq: [ new mongoose.Types.ObjectId(userId), '$userId' ] }
+                ]
+            }
+          }
+        },
+      ],
+      as: 'favorites'
+    }
+  },
+  { $addFields:
+    {
+      isFavorite: { $toBool: {$size: '$favorites'} },
+    }
+  },
+  { $unset: 'favorites' },
+]);
 
 @injectable()
 export class DefaultOfferService implements OfferService {
@@ -82,7 +94,7 @@ export class DefaultOfferService implements OfferService {
     return await this.offerModel.create(dto);
   }
 
-  public async find(query: FindQuery): Promise<DocumentType<OfferEntity>[]> {
+  public async find(query: FindQuery, userId?: string): Promise<DocumentType<OfferEntity>[]> {
     const {size} = query;
     const limit = Number(size ?? DEFAULT_OFFER_COUNT);
     const matchCity = query.city ? { $expr:
@@ -93,6 +105,7 @@ export class DefaultOfferService implements OfferService {
          ]
       }
     } : {};
+    const aggregate = userId ? [...aggregateComments, ...aggregateFavorite(userId)] : [...aggregateComments, ...aggregateDefaultFavorite];
     const offers = await this.offerModel
       .aggregate(aggregate)
       .match(matchCity)
@@ -102,15 +115,16 @@ export class DefaultOfferService implements OfferService {
     return offers;
   }
 
-  async findById(id: Types.ObjectId): Promise<DocumentType<OfferEntity> | null> {
+  async findById(id: Types.ObjectId, userId?: string): Promise<DocumentType<OfferEntity> | null> {
+    const aggregate = userId ? [...aggregateComments, ...aggregateFavorite(userId)] : [...aggregateComments, ...aggregateDefaultFavorite];
     const findByIdResult: DocumentType<OfferEntity>[] = await this.offerModel
       .aggregate([{$match: {_id: id}}, ...aggregate]).exec();
     return findByIdResult[0] ?? null;
   }
 
-  public async updateById(id: Types.ObjectId, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
+  public async updateById(id: Types.ObjectId, dto: UpdateOfferDto, userId?: string): Promise<DocumentType<OfferEntity> | null> {
     await this.offerModel.findByIdAndUpdate(id, dto, {new: true}).exec();
-    return this.findById(id);
+    return this.findById(id, userId);
   }
 
   public async incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null> {

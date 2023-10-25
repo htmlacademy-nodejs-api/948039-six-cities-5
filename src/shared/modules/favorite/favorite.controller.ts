@@ -1,18 +1,17 @@
-/* eslint-disable @typescript-eslint/no-shadow */
-import { StatusCodes } from 'http-status-codes';
 import { inject } from 'inversify';
-import { BaseController, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, PrivateRouteMiddleware, ValidateDtoMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
 import { DefaultFavoriteService, FavoriteEntity } from './index.js';
 import mongoose from 'mongoose';
-import { HttpError } from '../../libs/rest/errors/http-error.js';
 import { ShortOfferRdo } from '../offer/rdo/offer.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
 import { DocumentType } from '@typegoose/typegoose';
 import { OfferEntity } from '../offer/offer.entity.js';
-import { FindByIdRequestParams } from './favorite-request.type.js';
+import { CreateOrDeleteRequest } from './favorite-request.type.js';
+import { CreateFavoriteDto } from './dto/create-favorite.dto.js';
+import { FavoriteRdo } from './rdo/favorite.rdo.js';
 
 export class FavoriteController extends BaseController {
   constructor(
@@ -24,31 +23,41 @@ export class FavoriteController extends BaseController {
     this.logger.info('Register routes for FavoriteController…');
 
     this.addRoute({
-      path: '/:id',
+      path: '/',
       method: HttpMethod.Get,
-      handler: this.findById,
-      middlewares: [new ValidateObjectIdMiddleware('id')]
+      handler: this.find,
+      middlewares: [
+        new PrivateRouteMiddleware()
+      ]
     });
     this.addRoute({
-      path: '/:id',
+      path: '/',
       method: HttpMethod.Put,
-      handler: this.updateById,
-      middlewares: [new ValidateObjectIdMiddleware('id')]
+      handler: this.update,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDtoMiddleware(CreateFavoriteDto)
+      ]
     });
   }
 
-  public async findById({params}: Request<FindByIdRequestParams>, res: Response): Promise<void> {
-    const id = new mongoose.Types.ObjectId(params.id);
-    const favorites: DocumentType<FavoriteEntity & {offer: OfferEntity}>[] = await this.favoriteService.findByUserId(id);
-    const favoriteOffers = favorites.map((favorites) => favorites.offer);
+  public async find({tokenPayload}: Request, res: Response): Promise<void> {
+    const id = new mongoose.Types.ObjectId(tokenPayload.id);
+    const rawFavorites: DocumentType<FavoriteEntity & {offer: OfferEntity}>[] = await this.favoriteService.findByUserId(id);
+    const favoriteOffers = rawFavorites.map((favorites) => favorites.offer);
     this.ok(res, fillDTO(ShortOfferRdo, favoriteOffers));
   }
 
-  public async updateById(_req: Request, _res: Response): Promise<void> {
-    throw new HttpError(
-      StatusCodes.NOT_FOUND,
-      'Not implements this method.',
-      'FavoriteController'
-    );
+  public async update({tokenPayload, body}: CreateOrDeleteRequest, res: Response): Promise<void> {
+    const favoriteDto = {
+      offerId: body.offerId,
+      userId: tokenPayload.id,
+    };
+    const result = await this.favoriteService.createOrDelete(favoriteDto);
+    if (result === null) {
+      this.noContent(res, {});
+    } else {
+      this.created(res, fillDTO(FavoriteRdo, result));
+    }
   }
 }

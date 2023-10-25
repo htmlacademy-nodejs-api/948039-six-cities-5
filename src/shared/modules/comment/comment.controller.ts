@@ -1,5 +1,5 @@
 import { inject } from 'inversify';
-import { BaseController, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, PrivateRouteMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
@@ -32,6 +32,7 @@ export class CommentController extends BaseController {
       handler: this.createById,
       middlewares: [
         new ValidateObjectIdMiddleware('id'),
+        new PrivateRouteMiddleware(),
         new ValidateDtoMiddleware(CreateCommentDto)
       ]
     });
@@ -43,10 +44,13 @@ export class CommentController extends BaseController {
     this.ok(res, fillDTO(CommentRdo, comments));
   }
 
-  public async createById({params, body}: CreateCommentRequest, res: Response): Promise<void> {
+  public async createById({params, body, tokenPayload}: CreateCommentRequest, res: Response): Promise<void> {
     const {id} = params;
     const newComment: CreateCommentDto = {
-      ...body,
+      text: body.text,
+      rate: body.rate,
+      postDate: body.postDate,
+      userId: tokenPayload.id,
       offerId: id
     };
 
