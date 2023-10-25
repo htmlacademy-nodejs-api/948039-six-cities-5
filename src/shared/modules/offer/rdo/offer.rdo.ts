@@ -84,7 +84,7 @@ export class OfferRdo {
   public conveniences: string[];
 
   @Expose()
-  public commentCount: number;
+  public commentsCount: number;
 
   // NEEDS ASK
   // Почему класс матчит userId к полю _id

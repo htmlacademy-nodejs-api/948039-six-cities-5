@@ -13,3 +13,6 @@ export * from './types/document-exists.interface.js';
 export * from './middleware/document-exists.middleware.js';
 export * from './middleware/user-with-email-exists.middleware.js';
 export * from './middleware/upload-file.middleware.js';
+export * from './middleware/private-route.middleware.js';
+export * from './middleware/public-route.middleware.js';
+

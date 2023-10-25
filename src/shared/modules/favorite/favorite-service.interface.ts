@@ -1,6 +1,6 @@
 import { DocumentType } from '@typegoose/typegoose';
 import { FavoriteEntity } from './favorite.entity.js';
-import { CreateFavoriteDto } from './dto/createFavoriteDto.js';
+import { CreateFavoriteDto } from './dto/create-favorite.dto.js';
 import { DeleteFavoriteDto } from './dto/deleteFavoriteDto.js';
 import { Types } from 'mongoose';
 

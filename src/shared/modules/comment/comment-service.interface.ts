@@ -7,5 +7,5 @@ import { Types } from 'mongoose';
 export interface CommentService {
   create(dto: CreateCommentDto): Promise<DocumentType<CommentEntity>>;
   findByOfferId(offerId: Types.ObjectId): Promise<DocumentType<CommentEntity>[]>;
-  deleteByOfferId(offerId: Types.ObjectId): Promise<number | null>;
+  deleteByOfferId(offerId: Types.ObjectId): Promise<null>;
 }

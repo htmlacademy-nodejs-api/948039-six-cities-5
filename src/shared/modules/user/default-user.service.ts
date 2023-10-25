@@ -32,7 +32,7 @@ export class DefaultUserService implements UserService {
   }
 
   public async existsWithEmail(email: string): Promise<boolean> {
-    return this.userModel.findOne({email}) !== null;
+    return await this.userModel.findOne({email}) !== null;
   }
 
   public async exists(userId: string): Promise<boolean> {

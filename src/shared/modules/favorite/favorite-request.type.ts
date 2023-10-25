@@ -1,4 +1,5 @@
-import { ParamsDictionary } from 'express-serve-static-core';
+import { Request } from 'express';
+import { RequestBody, RequestParams } from '../../libs/rest/index.js';
+import { CreateFavoriteDto } from './dto/create-favorite.dto.js';
 
-export type FindByIdRequestParams = {id: string} | ParamsDictionary;
-
+export type CreateOrDeleteRequest = Request<RequestParams, RequestBody, CreateFavoriteDto>;

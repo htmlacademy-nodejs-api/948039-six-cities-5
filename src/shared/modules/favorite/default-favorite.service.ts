@@ -1,9 +1,9 @@
 import { DocumentType, types } from '@typegoose/typegoose';
-import { Component } from '../../types/index.js';
+import { Component, SortType } from '../../types/index.js';
 import { inject, injectable } from 'inversify';
 import { FavoriteEntity } from './favorite.entity.js';
 import { FavoriteService } from './favorite-service.interface.js';
-import { CreateFavoriteDto } from './dto/createFavoriteDto.js';
+import { CreateFavoriteDto } from './dto/create-favorite.dto.js';
 import { DeleteFavoriteDto } from './dto/deleteFavoriteDto.js';
 import {Types} from 'mongoose';
 import { OfferEntity } from '../offer/index.js';
@@ -82,17 +82,20 @@ export class DefaultFavoriteService implements FavoriteService {
                 {$size: '$comments'}
               ]},
               0
-            ]}
+            ]},
+            ['offer.commentsCount']: {$size: '$comments'}
           }
         },
       ])
+      .sort({ createdAt: SortType.Down })
       .exec();
   }
 
   public async createOrDelete(dto: CreateFavoriteDto | DeleteFavoriteDto): Promise<DocumentType<FavoriteEntity> | null> {
     const isExistFavoriteEntity = await this.favoriteModel.exists(dto) !== null;
     if (isExistFavoriteEntity) {
-      return await this.favoriteModel.findOneAndDelete(dto).exec();
+      await this.favoriteModel.findOneAndDelete(dto).exec();
+      return null;
     } else {
       return await this.favoriteModel.create(dto);
     }
