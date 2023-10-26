@@ -7,6 +7,7 @@ import { CreateFavoriteDto } from './dto/create-favorite.dto.js';
 import { DeleteFavoriteDto } from './dto/deleteFavoriteDto.js';
 import {Types} from 'mongoose';
 import { OfferEntity } from '../offer/index.js';
+import { addIsFavorite, addRate, findByUserId, lookupComments, lookupOffer, unwindOffer } from './favorite.aggregate.js';
 
 @injectable()
 export class DefaultFavoriteService implements FavoriteService {
@@ -23,69 +24,12 @@ export class DefaultFavoriteService implements FavoriteService {
   public async findByUserId(userId: Types.ObjectId): Promise<DocumentType<FavoriteEntity & {offer: OfferEntity}>[]> {
     return await this.favoriteModel
       .aggregate([
-        {$match: {
-          $expr: {
-            $eq: [userId, '$userId']
-          }
-        }},
-        {
-          $lookup: {
-            from: 'offers',
-            let: { offerId: '$offerId'},
-            pipeline: [
-              { $match:
-                { $expr:
-                  { $eq: [ '$_id', '$$offerId' ] },
-                }
-              },
-            ],
-            as: 'offers'
-          },
-        },
-        {$addFields: {
-          offer: {$first: '$offers'}
-        }}
-        , {
-          $unset: 'offers'
-        },
-        {
-          $lookup: {
-            from: 'comments',
-            let: { offerId: '$offerId'},
-            pipeline: [
-              { $match:
-                { $expr:
-                  { $eq: [ '$offerId', '$$offerId' ] }
-                }
-              }
-            ],
-            as: 'comments'
-          }
-        },
-        { $addFields:
-          {
-            ['offer.isFavorite']: true,
-            ['offer.rate']: {$cond: [
-              {
-                $ne: [{
-                  $size: '$comments'
-                },
-                0
-                ]
-              },
-              {$divide: [
-                {$reduce: {
-                  input: '$comments',
-                  initialValue: 0,
-                  in: {$add: ['$$value', '$$this.rate'],}
-                }},
-                {$size: '$comments'}
-              ]},
-              0
-            ]},
-            ['offer.commentsCount']: {$size: '$comments'}
-          }
-        },
+        findByUserId(userId),
+        lookupOffer,
+        unwindOffer,
+        lookupComments,
+        addIsFavorite,
+        addRate
       ])
       .sort({ createdAt: SortType.Down })
       .exec();

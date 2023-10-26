@@ -3,86 +3,12 @@ import { Component, SortType } from '../../types/index.js';
 import { OfferEntity } from './offer.entity.js';
 import { inject, injectable } from 'inversify';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
-import mongoose, {Types} from 'mongoose';
+import { Types } from 'mongoose';
 import { OfferService } from './offer-service.interface.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { DEFAULT_OFFER_COUNT } from './offer.constant.js';
 import { FindQuery } from './offer-request.type.js';
-
-const aggregateComments = [
-  {
-    $lookup: {
-      from: 'comments',
-      let: { offerId: '$_id'},
-      pipeline: [
-        { $match:
-          { $expr:
-            { $eq: [ '$offerId', '$$offerId' ] }
-          }
-        }
-      ],
-      as: 'comments'
-    }
-  },
-  { $addFields:
-    {
-      commentsCount: { $size: '$comments' },
-      rate: {$cond: [
-        {
-          $ne: [{
-            $size: '$comments'
-          },
-          0
-          ]
-        },
-        {$divide: [
-          {$reduce: {
-            input: '$comments',
-            initialValue: 0,
-            in: {$add: ['$$value', '$$this.rate'],}
-          }},
-          {$size: '$comments'}
-        ]},
-        0
-      ]}
-    }
-  },
-  { $unset: 'comments' },
-];
-
-const aggregateDefaultFavorite = [
-  { $addFields:
-    { isFavorite: false }
-  }
-];
-
-const aggregateFavorite = (userId: string) => ([
-  {
-    $lookup: {
-      from: 'favorites',
-      let: { offerId: '$_id'},
-      pipeline: [
-        { $match:
-          { $expr:
-            { $and:
-                [
-                  { $eq: [ '$offerId', '$$offerId' ] },
-                  { $eq: [ new mongoose.Types.ObjectId(userId), '$userId' ] }
-                ]
-            }
-          }
-        },
-      ],
-      as: 'favorites'
-    }
-  },
-  { $addFields:
-    {
-      isFavorite: { $toBool: {$size: '$favorites'} },
-    }
-  },
-  { $unset: 'favorites' },
-]);
+import { aggregateComments, aggregateFavorite, aggregateDefaultFavorite, matchCity } from './offer.aggregate.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
@@ -97,18 +23,11 @@ export class DefaultOfferService implements OfferService {
   public async find(query: FindQuery, userId?: string): Promise<DocumentType<OfferEntity>[]> {
     const {size} = query;
     const limit = Number(size ?? DEFAULT_OFFER_COUNT);
-    const matchCity = query.city ? { $expr:
-      { $and:
-         [
-           { $eq: [ '$city', query.city ] },
-           { $eq: [ '$isPremium', true ] }
-         ]
-      }
-    } : {};
+    const match = query.city ? matchCity(query.city) : {};
     const aggregate = userId ? [...aggregateComments, ...aggregateFavorite(userId)] : [...aggregateComments, ...aggregateDefaultFavorite];
     const offers = await this.offerModel
       .aggregate(aggregate)
-      .match(matchCity)
+      .match(match)
       .limit(limit)
       .sort({ createdAt: SortType.Down })
       .exec();
