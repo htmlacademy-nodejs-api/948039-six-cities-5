@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { Ref, defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { UserEntity } from '../user/user.entity.js';
 import { OfferEntity } from '../offer/index.js';
-
-export interface CommentEntity extends defaultClasses.Base {}
 
 @modelOptions({
   schemaOptions: {

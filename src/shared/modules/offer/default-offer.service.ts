@@ -21,9 +21,9 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async find(query: FindQuery, userId?: string): Promise<DocumentType<OfferEntity>[]> {
-    const {size} = query;
+    const {size, city} = query;
     const limit = Number(size ?? DEFAULT_OFFER_COUNT);
-    const match = query.city ? matchCity(query.city) : {};
+    const match = city ? matchCity(city) : {};
     const aggregate = userId ? [...aggregateComments, ...aggregateFavorite(userId)] : [...aggregateComments, ...aggregateDefaultFavorite];
     const offers = await this.offerModel
       .aggregate(aggregate)

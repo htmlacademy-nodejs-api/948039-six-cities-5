@@ -1,8 +1,6 @@
 import { Expose, Transform, Exclude } from 'class-transformer';
 
 export class ShortOfferRdo {
-  // NEEDS ASK
-  // Почему класс матчит userId к полю _id
   @Expose()
   @Transform((query) => query.obj['_id'])
   public id: string;
@@ -86,8 +84,6 @@ export class OfferRdo {
   @Expose()
   public commentsCount: number;
 
-  // NEEDS ASK
-  // Почему класс матчит userId к полю _id
   @Expose()
   @Transform((query) => query.obj[query.key])
   public userId: string;

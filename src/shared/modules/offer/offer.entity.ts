@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { Ref, defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { City, Convenience, HouseTypeEnum } from '../../types/index.js';
 import { UserEntity } from '../user/user.entity.js';
-
-export interface OfferEntity extends defaultClasses.Base {}
+import { Types } from 'mongoose';
 
 @modelOptions({
   schemaOptions: {
@@ -60,6 +58,10 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop()
   public coords: [string, string];
+
+  public id: string;
+
+  public _id: Types.ObjectId;
 }
 
 export const OfferModel = getModelForClass(OfferEntity);
