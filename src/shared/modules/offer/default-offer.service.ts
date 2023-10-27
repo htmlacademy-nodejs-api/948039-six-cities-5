@@ -6,7 +6,7 @@ import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { Types } from 'mongoose';
 import { OfferService } from './offer-service.interface.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
-import { DEFAULT_OFFER_COUNT } from './offer.constant.js';
+import { DEFAULT_OFFER_COUNT, DEFAULT_PREMIUM_OFFER_COUNT } from './offer.constant.js';
 import { FindQuery } from './offer-request.type.js';
 import { aggregateComments, aggregateFavorite, aggregateDefaultFavorite, matchCity } from './offer.aggregate.js';
 
@@ -22,7 +22,7 @@ export class DefaultOfferService implements OfferService {
 
   public async find(query: FindQuery, userId?: string): Promise<DocumentType<OfferEntity>[]> {
     const {size, city} = query;
-    const limit = Number(size ?? DEFAULT_OFFER_COUNT);
+    const limit = city ? DEFAULT_PREMIUM_OFFER_COUNT : Number(size ?? DEFAULT_OFFER_COUNT);
     const match = city ? matchCity(city) : {};
     const aggregate = userId ? [...aggregateComments, ...aggregateFavorite(userId)] : [...aggregateComments, ...aggregateDefaultFavorite];
     const offers = await this.offerModel
