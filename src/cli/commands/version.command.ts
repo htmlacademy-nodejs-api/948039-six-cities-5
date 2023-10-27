@@ -8,17 +8,12 @@ type PackageJSONConfig = {
   version: string;
 }
 
-const isValidJson = (json: unknown): json is PackageJSONConfig => {
-  if (typeof json === 'object' &&
-        json !== null &&
-        !Array.isArray(json) &&
-        Object.hasOwn(json, 'version')
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-};
+const isValidJson = (json: unknown): json is PackageJSONConfig => (
+  typeof json === 'object' &&
+  json !== null &&
+  !Array.isArray(json) &&
+  Object.hasOwn(json, 'version')
+);
 
 @injectable()
 export class VersionCommand implements Command {

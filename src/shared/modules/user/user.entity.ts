@@ -1,16 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { User, UserTypeEnum } from '../../types/index.js';
 import { createSHA256 } from '../../helpers/index.js';
-
-export interface UserEntity extends defaultClasses.Base {}
+import { Types } from 'mongoose';
 
 @modelOptions({
   schemaOptions: {
     collection: 'users'
   }
 })
-export class UserEntity extends defaultClasses.TimeStamps implements User {
+export class UserEntity extends defaultClasses.TimeStamps {
   @prop({required: true})
   public name: string;
 
@@ -25,6 +23,10 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
 
   @prop({required: true, enum: UserTypeEnum})
   public type: UserTypeEnum;
+
+  public id: string;
+
+  public _id: Types.ObjectId;
 
   constructor(user: User) {
     super();

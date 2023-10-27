@@ -14,7 +14,7 @@ import chalk from 'chalk';
 import { Logger } from '../../shared/libs/logger/index.js';
 import { CreateOfferDto } from '../../shared/modules/offer/dto/create-offer.dto.js';
 import { DefaultCommentService } from '../../shared/modules/comment/default-comment.service.js';
-import { CreateCommentDto } from '../../shared/modules/comment/dto/createCommentDto.js';
+import { CreateCommentDto } from '../../shared/modules/comment/dto/create-comment-dto.js';
 import { DefaultFavoriteService } from '../../shared/modules/favorite/default-favorite.service.js';
 import { CreateFavoriteDto } from '../../shared/modules/favorite/dto/create-favorite.dto.js';
 

@@ -3,7 +3,7 @@ import { Component, SortType } from '../../types/index.js';
 import { inject, injectable } from 'inversify';
 import { CommentEntity } from './comment.entity.js';
 import { CommentService } from './comment-service.interface.js';
-import { CreateCommentDto } from './dto/createCommentDto.js';
+import { CreateCommentDto } from './dto/create-comment-dto.js';
 import { DEFAULT_COMMENT_COUNT } from './comment.constant.js';
 import { Types } from 'mongoose';
 

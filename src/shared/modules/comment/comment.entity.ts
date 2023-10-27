@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { Ref, defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { UserEntity } from '../user/user.entity.js';
 import { OfferEntity } from '../offer/index.js';
-
-export interface CommentEntity extends defaultClasses.Base {}
+import { Types } from 'mongoose';
 
 @modelOptions({
   schemaOptions: {
@@ -31,6 +29,10 @@ export class CommentEntity extends defaultClasses.TimeStamps {
 
   @prop()
   public rate: number;
+
+  public id: string;
+
+  public _id: Types.ObjectId;
 }
 
 export const CommentModel = getModelForClass(CommentEntity);
