@@ -5,6 +5,7 @@ import { UserEntity } from './user.entity.js';
 import { Types } from 'mongoose';
 import { inject, injectable } from 'inversify';
 import { Component } from '../../types/index.js';
+import { DEFAULT_AVATAR_FILE_NAME } from './index.js';
 
 @injectable()
 export class DefaultUserService implements UserService {
@@ -13,7 +14,7 @@ export class DefaultUserService implements UserService {
   ) {}
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
-    const user = new UserEntity(dto);
+    const user = new UserEntity({...dto, avatar: DEFAULT_AVATAR_FILE_NAME });
     user.setPassword(dto.password, salt);
 
     return await this.userModel.create(user);
