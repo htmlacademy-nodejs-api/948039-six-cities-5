@@ -43,7 +43,6 @@ export class CreateOfferDto {
   @Max(MAX_GUEST_COUNT, {message: CreateOfferValidationMessage.guest.maxValue})
   public guest: number;
 
-
   @IsInt({message: CreateOfferValidationMessage.price.invalidFormat})
   @Min(MIN_PRICE, {message: CreateOfferValidationMessage.price.minValue})
   @Max(MAX_PRICE, {message: CreateOfferValidationMessage.price.maxValue})

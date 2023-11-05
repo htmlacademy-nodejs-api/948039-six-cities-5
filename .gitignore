@@ -12,3 +12,4 @@ coverage
 .env
 /upload/
 /static/
+/frontend/node_modules/

@@ -5,7 +5,7 @@ import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
 import { DefaultFavoriteService, FavoriteEntity } from './index.js';
 import mongoose from 'mongoose';
-import { ShortOfferRdo } from '../offer/rdo/offer.rdo.js';
+import { OfferRdo } from '../offer/rdo/offer.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
 import { DocumentType } from '@typegoose/typegoose';
 import { OfferEntity } from '../offer/offer.entity.js';
@@ -45,7 +45,7 @@ export class FavoriteController extends BaseController {
     const id = new mongoose.Types.ObjectId(tokenPayload.id);
     const rawFavorites: DocumentType<FavoriteEntity & {offer: OfferEntity}>[] = await this.favoriteService.findByUserId(id);
     const favoriteOffers = rawFavorites.map((favorites) => favorites.offer);
-    this.ok(res, fillDTO(ShortOfferRdo, favoriteOffers));
+    this.ok(res, fillDTO(OfferRdo, favoriteOffers));
   }
 
   public async update({tokenPayload, body}: CreateOrDeleteRequest, res: Response): Promise<void> {

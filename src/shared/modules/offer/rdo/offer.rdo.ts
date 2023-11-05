@@ -1,4 +1,4 @@
-import { Expose, Transform, Exclude } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 export class ShortOfferRdo {
   @Expose()
@@ -35,7 +35,8 @@ export class ShortOfferRdo {
 }
 
 export class OfferRdo {
-  @Exclude()
+  @Expose()
+  @Transform((query) => query.obj[query.key])
   public _id: string;
 
   @Expose()
@@ -54,7 +55,7 @@ export class OfferRdo {
   public preview: string;
 
   @Expose()
-  public images: string;
+  public images: string[];
 
   @Expose()
   public isPremium: boolean;
