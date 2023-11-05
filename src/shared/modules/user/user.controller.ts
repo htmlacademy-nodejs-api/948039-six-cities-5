@@ -5,11 +5,9 @@ import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
 import { DefaultUserService } from './default-user.service.js';
 import { RestConfig } from '../../libs/config/rest.config.js';
-import {StatusCodes} from 'http-status-codes';
 import { UserRdo } from './rdo/user.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
 import { CreateUserRequest, LoginUserRequest, UpdateByIdRequestParams } from './user-request.type.js';
-import { HttpError } from '../../libs/rest/errors/http-error.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UserWithEmailExistsMiddleware } from '../../libs/rest/middleware/user-with-email-exists.middleware.js';
 import mongoose from 'mongoose';
@@ -48,16 +46,16 @@ export class UserController extends BaseController {
       ]
     });
     this.addRoute({
-      path: '/:id/avatar',
+      path: '/avatar/:id',
       method: HttpMethod.Post,
       handler: this.uploadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('id'),
-        new PrivateRouteMiddleware(),
         new UserExistsMiddleware(this.userService, 'User', 'id'),
         new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar'),
       ]
     });
+    this.addRoute({ path: '/logout', method: HttpMethod.Delete, handler: this.logout });
   }
 
   public async register({ body }: CreateUserRequest, res: Response): Promise<void> {
@@ -81,15 +79,15 @@ export class UserController extends BaseController {
     this.ok(res, fillDTO(UserRdo, user));
   }
 
-  public async uploadAvatar({params, file, tokenPayload}: Request<UpdateByIdRequestParams>, res: Response) {
+  public async uploadAvatar({params, file}: Request<UpdateByIdRequestParams>, res: Response) {
     const id = new mongoose.Types.ObjectId(params.id);
-    const userId = tokenPayload.id;
-    if (userId !== params.id) {
-      throw new HttpError(StatusCodes.METHOD_NOT_ALLOWED, 'Пользователь не имеет доступ к изменению данного ресурса');
-    }
     await this.userService.updateById(id, file!.filename);
     this.created(res, {
       filepath: file?.path
     });
+  }
+
+  public async logout(_req: Request, res: Response): Promise<void> {
+    this.ok(res, {});
   }
 }

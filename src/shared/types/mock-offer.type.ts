@@ -14,6 +14,5 @@ export type MockOffer = {
   price: number;
   conveniences: Convenience[];
   user: Omit<User, 'password'>;
-  commentsCount: number;
   coords: [string, string];
 }

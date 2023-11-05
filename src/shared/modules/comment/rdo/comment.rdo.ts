@@ -2,6 +2,10 @@ import { Expose, Transform } from 'class-transformer';
 
 export class CommentRdo {
   @Expose()
+  @Transform((query) => query.obj['_id'])
+  public id: string;
+
+  @Expose()
   public text: string;
 
   @Expose()

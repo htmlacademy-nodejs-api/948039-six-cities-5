@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 import { fillDTO } from '../../helpers/index.js';
 import { UpdateByIdRequest, CreateRequest, DeleteByIdRequestParams, FindByIdRequestParams, FindRequest } from './offer-request.type.js';
 import { DefaultOfferService } from './index.js';
-import { OfferRdo, ShortOfferRdo } from './rdo/offer.rdo.js';
+import { OfferRdo } from './rdo/offer.rdo.js';
 import mongoose from 'mongoose';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
@@ -76,7 +76,7 @@ export class OfferController extends BaseController {
   public async find({query, tokenPayload}: FindRequest, res: Response): Promise<void> {
     const userId = tokenPayload?.id;
     const result = await this.offerService.find(query, userId);
-    this.ok(res, fillDTO(ShortOfferRdo, result));
+    this.ok(res, fillDTO(OfferRdo, result));
   }
 
   public async findById({params, tokenPayload}: Request<FindByIdRequestParams>, res: Response): Promise<void> {
